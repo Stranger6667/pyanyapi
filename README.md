@@ -1,1 +1,2 @@
+[![Build Status](https://travis-ci.org/Stranger6667/pyanyapi.svg)](https://travis-ci.org/Stranger6667/pyanyapi)
 [![codecov.io](http://codecov.io/github/Stranger6667/pyanyapi/coverage.svg?branch=master)](http://codecov.io/github/Stranger6667/pyanyapi?branch=master)
