@@ -30,7 +30,7 @@ clean-test:
 	rm -fr reports/
 
 test:
-	python setup.py test --pytest-args="--cov=pyanyapi"
+	python setup.py test --pytest-args="--cov=pyanyapi --cov-report xml"
 
 test-all:
 	tox

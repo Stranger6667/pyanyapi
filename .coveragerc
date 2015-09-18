@@ -1,2 +1,9 @@
 [run]
 branch = true
+
+[report]
+show_missing = true
+precision = 2
+
+[xml]
+output = coverage.xml
