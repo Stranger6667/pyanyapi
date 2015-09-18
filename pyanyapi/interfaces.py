@@ -164,7 +164,7 @@ class JSONInterface(BaseInterface):
 
     def perform_parsing(self):
         try:
-            return ujson.loads(self.content)
+            return json.loads(self.content)
         except (ValueError, TypeError):
             raise ResponseParseError('JSON response can not be parsed.')
 
