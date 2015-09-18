@@ -1,0 +1,1 @@
+[![codecov.io](http://codecov.io/github/Stranger6667/pyanyapi/coverage.svg?branch=master)](http://codecov.io/github/Stranger6667/pyanyapi?branch=master)
