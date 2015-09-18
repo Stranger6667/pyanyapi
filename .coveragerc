@@ -1,3 +1,6 @@
+[run]
+branch = true
+
 [report]
 show_missing = true
 precision = 2
@@ -6,6 +9,3 @@ omit = */tests/*
        setup.py
        */*.egg/*
        */*.egg-info/*
-
-[xml]
-output = reports/coverage.xml
