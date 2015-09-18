@@ -130,15 +130,12 @@ class HTMLParser(ResponseParser):
 class XMLParser(ResponseParser):
     interface_class = XMLInterface
 
+    def prepare_content(self, content):
+        return content.replace('encoding="UTF-8"', '').replace('encoding="utf-8"', '')
+
 
 class XMLObjectifyParser(ResponseParser):
     interface_class = XMLObjectifyInterface
-
-
-class FixedXMLParser(XMLParser):
-
-    def prepare_content(self, content):
-        return content.replace('encoding="UTF-8"', '').replace('encoding="utf-8"', '')
 
 
 class JSONParser(ResponseParser):

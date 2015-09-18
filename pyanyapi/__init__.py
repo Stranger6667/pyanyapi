@@ -9,7 +9,6 @@ from .parsers import (
     HTMLParser,
     XMLParser,
     XMLObjectifyParser,
-    FixedXMLParser,
     JSONParser,
     RegExpResponseParser,
     SOAPParser,

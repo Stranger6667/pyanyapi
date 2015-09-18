@@ -134,7 +134,7 @@ class XMLObjectifyInterface(BaseInterface):
 
     def perform_parsing(self):
         try:
-            return objectify.fromstring(str(self.content))
+            return objectify.fromstring(self.content)
         except etree.XMLSyntaxError:
             raise ResponseParseError('XML response can not be parsed.')
 
