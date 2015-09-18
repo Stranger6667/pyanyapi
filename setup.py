@@ -35,6 +35,7 @@ requirements = [
 test_requirements = [
     'pytest>=2.5.0',
     'pytest-cov>=1.7',
+    'coverage==3.7.1',
 ]
 
 setup(
