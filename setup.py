@@ -38,6 +38,9 @@ test_requirements = [
     'coverage==3.7.1',
 ]
 
+if sys.version_info < (3, 3):
+    test_requirements.append('mock==1.0.1')
+
 setup(
     name='pyanyapi',
     version='0.1',

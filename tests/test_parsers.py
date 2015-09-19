@@ -1,6 +1,7 @@
 # coding: utf-8
 import pytest
 
+from ._compat import patch
 from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, HTMLParser
 from pyanyapi.exceptions import ResponseParseError
 
@@ -116,3 +117,13 @@ def test_multiply_parsers_declaration(dummy_parser):
 def test_empty_values(empty_values_parser, content, attr, expected):
     parsed = empty_values_parser.parse(content)
     assert getattr(parsed, attr) == expected
+
+
+def test_attributes(empty_values_parser):
+    assert set(empty_values_parser.attributes) == set(['combined', 'test', 'test', 'second', 'null', 'third'])
+
+
+def test_efficient_parsing(empty_values_parser):
+    with patch.object(empty_values_parser.parsers[0], 'parse') as regexp_parser:
+        assert empty_values_parser.parse(JSON_CONTENT).second is None
+        assert not regexp_parser.called
