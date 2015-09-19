@@ -18,6 +18,12 @@ def test_xml_objectify_parser_error():
         parsed.test
 
 
+def test_xml_parser_error():
+    parsed = XMLParser({'test': None}).parse('<xml><test>123')
+    with pytest.raises(ResponseParseError):
+        parsed.test
+
+
 def test_xml_parsed():
     content = '''<?xml version="1.0" encoding="UTF-8"?>
     <response>
@@ -32,6 +38,7 @@ def test_xml_parsed():
         }
     })
     assert parser.parse(content).success == ['1']
+    assert parser.parse(content).parse('string(//id/text())') == '32e9a4a2'
 
 
 def test_json_parsed():
@@ -96,6 +103,7 @@ def test_multiply_parsers_declaration(dummy_parser):
     parsed = dummy_parser.parse(JSON_CONTENT)
     assert parsed.success == 'value'
     assert parsed.combined == '123-value'
+    assert parsed.method('-123') == 'value-123'
     assert parsed.test is None
 
     parsed = dummy_parser.parse("<html><body><a href='#test'></body></html>")

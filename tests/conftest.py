@@ -1,7 +1,7 @@
 # coding: utf-8
 import pytest
 
-from pyanyapi import HTMLParser, JSONParser, RegExpResponseParser, CombinedParser, interface_property
+from pyanyapi import HTMLParser, JSONParser, RegExpResponseParser, CombinedParser, interface_property, interface_method
 
 
 class EmptyValuesParser(CombinedParser):
@@ -55,6 +55,10 @@ class DummyParser(CombinedParser):
     @interface_property
     def combined(self):
         return '123-' + self.success
+
+    @interface_method
+    def method(self, value):
+        return self.success + value
 
 
 @pytest.fixture
