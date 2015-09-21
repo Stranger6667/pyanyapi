@@ -22,6 +22,13 @@ class BaseInterface(object):
 
     @classmethod
     def init_attr(cls, settings):
+
+        def inner(self):
+            return cls.execute_method(self, settings)
+
+        return inner
+
+    def execute_method(self, settings):
         raise NotImplementedError
 
     @property
@@ -95,22 +102,17 @@ class XPathInterface(BaseInterface):
         except etree.XMLSyntaxError:
             raise ResponseParseError('XML response can not be parsed.')
 
-    @classmethod
-    def init_attr(cls, settings):
-
-        def inner(self):
-            if isinstance(settings, dict):
-                result = self.parsed_content.xpath(settings['base'])
-                if settings.get('children'):
-                    return [''.join(element.xpath(settings['children'])).strip() for element in result]
-                elif isinstance(result, list):
-                    return result
-                else:
-                    return result.strip()
+    def execute_method(self, settings):
+        if isinstance(settings, dict):
+            result = self.parsed_content.xpath(settings['base'])
+            if settings.get('children'):
+                return [''.join(element.xpath(settings['children'])).strip() for element in result]
+            elif isinstance(result, list):
+                return result
             else:
-                return self.parsed_content.xpath(settings)
-
-        return inner
+                return result.strip()
+        else:
+            return self.parsed_content.xpath(settings)
 
     def parse(self, xpath):
         return self.parsed_content.xpath(xpath)
@@ -159,7 +161,7 @@ class JSONInterface(BaseInterface):
     Settings example:
 
     {
-        'external_id': {'base': 'container > id'}
+        'external_id': 'container > id'
     }
 
     which will get "123" from {"container":{"id":"123"}}
@@ -187,23 +189,18 @@ class JSONInterface(BaseInterface):
                         return cls.empty_result
         return result
 
-    @classmethod
-    def init_attr(cls, settings):
+    def execute_method(self, settings):
+        if isinstance(settings, dict):
+            result = self.get_from_json(self.parsed_content, settings['base'])
 
-        def inner(self):
-            if isinstance(settings, dict):
-                result = self.get_from_json(self.parsed_content, settings['base'])
+            if settings.get('children'):
+                children = settings.get('children')
+                return [
+                    self.get_from_json(r, children) or self.empty_result for r in result
+                ] if result else self.empty_result
+            return result
 
-                if settings.get('children'):
-                    children = settings.get('children')
-                    return [
-                        self.get_from_json(r, children) or cls.empty_result for r in result
-                    ] if result else cls.empty_result
-                return result
-
-            return self.get_from_json(self.parsed_content, settings)
-
-        return inner
+        return self.get_from_json(self.parsed_content, settings)
 
 
 class RegExpInterface(BaseInterface):
@@ -220,17 +217,8 @@ class RegExpInterface(BaseInterface):
     So, response will be like 'ok' or 'Error 100'.
     """
 
-    def get_match(self, expression):
-        expression = re.compile(expression)
-        matches = expression.findall(self.content)
+    def execute_method(self, settings):
+        matches = re.findall(settings, self.content)
         if matches:
             return matches[0]
         return self.empty_result
-
-    @classmethod
-    def init_attr(cls, expression):
-
-        def inner(self):
-            return self.get_match(expression)
-
-        return inner
