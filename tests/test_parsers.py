@@ -154,3 +154,10 @@ def test_settings_inheritance():
     assert parser.settings['child1'] == 'test3'
     assert parser.settings['parent2'] == 'child_override'
     assert parser.settings['parent1'] == 'test1'
+
+
+def test_complex_config():
+    parsed = XMLParser({'test': {'base': '//test', 'children': 'text()|*//text()'}}).parse(
+        '<xml><test>123 </test><test><inside> 234</inside></test></xml>'
+    )
+    assert parsed.test == ['123', '234']
