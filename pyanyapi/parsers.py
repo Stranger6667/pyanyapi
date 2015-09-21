@@ -42,7 +42,7 @@ class ResponseParser(object):
         Gather settings from parent classes. It provides some kind of settings inheritance.
         """
         parents_settings = {}
-        for klass in self.__class__.mro()[::-1]:
+        for klass in reversed(self.__class__.mro()):
             parents_settings.update(getattr(klass, 'settings', {}))
         return parents_settings
 
