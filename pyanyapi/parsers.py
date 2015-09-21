@@ -9,7 +9,6 @@ from .interfaces import (
     XMLObjectifyInterface,
     JSONInterface,
     RegExpInterface,
-    SOAPInterface,
     CombinedInterface
 )
 from .helpers import attach_attribute, attach_cached_property
@@ -144,7 +143,3 @@ class JSONParser(ResponseParser):
 
 class RegExpResponseParser(ResponseParser):
     interface_class = RegExpInterface
-
-
-class SOAPParser(ResponseParser):
-    interface_class = SOAPInterface

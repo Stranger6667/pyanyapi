@@ -31,7 +31,7 @@ class BaseInterface(object):
         return self._parsed_content
 
     def perform_parsing(self):
-        return self.content
+        raise NotImplementedError
 
 
 # Uses as fallback. None - can be obtained from JSON's null, any string also can be, so unique object is a best choice
@@ -228,16 +228,3 @@ class RegExpInterface(BaseInterface):
             return self.get_match(expression)
 
         return inner
-
-
-class SOAPInterface(RegExpInterface):
-    """
-    Hack to be able to easy parse suds responses.
-    """
-    expression_template = r'<(ns1:)?{0}>(.*)</(ns1:)?{0}>'
-
-    def get_match(self, attr_name):
-        try:
-            return re.findall(self.expression_template.format(attr_name), self.content, re.DOTALL)[0][1]
-        except IndexError:
-            return self.empty_result

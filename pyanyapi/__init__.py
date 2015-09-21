@@ -11,7 +11,6 @@ from .parsers import (
     XMLObjectifyParser,
     JSONParser,
     RegExpResponseParser,
-    SOAPParser,
 )
 from .interfaces import (
     BaseInterface,
@@ -19,6 +18,5 @@ from .interfaces import (
     XMLInterface,
     JSONInterface,
     RegExpInterface,
-    SOAPInterface,
 )
 from .decorators import interface_property, interface_method
