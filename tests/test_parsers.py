@@ -2,6 +2,7 @@
 import pytest
 
 from ._compat import patch
+from .conftest import ChildParser
 from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, HTMLParser
 from pyanyapi.exceptions import ResponseParseError
 
@@ -145,3 +146,11 @@ def test_simple_config_xml_parser():
 def test_simple_config_json_parser():
     parsed = JSONParser({'test': 'container > test'}).parse(JSON_CONTENT)
     assert parsed.test == 'value'
+
+
+def test_settings_inheritance():
+    parser = ChildParser({'child2': 'override'})
+    assert parser.settings['child2'] == 'override'
+    assert parser.settings['child1'] == 'test3'
+    assert parser.settings['parent2'] == 'child_override'
+    assert parser.settings['parent1'] == 'test1'

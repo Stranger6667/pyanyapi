@@ -64,3 +64,18 @@ class DummyParser(CombinedParser):
 @pytest.fixture
 def dummy_parser():
     return DummyParser()
+
+
+class ParentParser(JSONParser):
+    settings = {
+        'parent1': 'test1',
+        'parent2': 'test2'
+    }
+
+
+class ChildParser(ParentParser):
+    settings = {
+        'parent2': 'child_override',
+        'child1': 'test3',
+        'child2': 'test4'
+    }
