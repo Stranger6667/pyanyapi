@@ -135,3 +135,13 @@ def test_efficient_parsing(empty_values_parser):
     with patch.object(empty_values_parser.parsers[0], 'parse') as regexp_parser:
         assert empty_values_parser.parse(JSON_CONTENT).second is None
         assert not regexp_parser.called
+
+
+def test_simple_config_xml_parser():
+    parsed = XMLParser({'test': 'string(//test/text())'}).parse('<xml><test>123</test></xml>')
+    assert parsed.test == '123'
+
+
+def test_simple_config_json_parser():
+    parsed = JSONParser({'test': 'container > test'}).parse(JSON_CONTENT)
+    assert parsed.test == 'value'

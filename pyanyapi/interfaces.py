@@ -99,13 +99,16 @@ class XPathInterface(BaseInterface):
     def init_attr(cls, settings):
 
         def inner(self):
-            result = self.parsed_content.xpath(settings['base'])
-            if settings.get('children'):
-                return [''.join(element.xpath(settings['children'])).strip() for element in result]
-            elif isinstance(result, list):
-                return result
+            if isinstance(settings, dict):
+                result = self.parsed_content.xpath(settings['base'])
+                if settings.get('children'):
+                    return [''.join(element.xpath(settings['children'])).strip() for element in result]
+                elif isinstance(result, list):
+                    return result
+                else:
+                    return result.strip()
             else:
-                return result.strip()
+                return self.parsed_content.xpath(settings)
 
         return inner
 
@@ -188,14 +191,17 @@ class JSONInterface(BaseInterface):
     def init_attr(cls, settings):
 
         def inner(self):
-            result = self.get_from_json(self.parsed_content, settings['base'])
+            if isinstance(settings, dict):
+                result = self.get_from_json(self.parsed_content, settings['base'])
 
-            if settings.get('children'):
-                children = settings.get('children')
-                return [
-                    self.get_from_json(r, children) or cls.empty_result for r in result
-                ] if result else cls.empty_result
-            return result
+                if settings.get('children'):
+                    children = settings.get('children')
+                    return [
+                        self.get_from_json(r, children) or cls.empty_result for r in result
+                    ] if result else cls.empty_result
+                return result
+
+            return self.get_from_json(self.parsed_content, settings)
 
         return inner
 
