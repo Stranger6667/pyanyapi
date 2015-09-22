@@ -1,7 +1,7 @@
 History
 -------
 
-0.2 - TBD
+0.2 - 23.09.2015
 ----------------
 
 * Add ```parse``` methods for JSONInterface & RegExpInterface (#8).
