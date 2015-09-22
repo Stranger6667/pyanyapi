@@ -3,7 +3,7 @@ import pytest
 
 from ._compat import patch
 from .conftest import ChildParser
-from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, HTMLParser
+from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, HTMLParser, RegExpParser
 from pyanyapi.exceptions import ResponseParseError
 
 
@@ -75,7 +75,7 @@ def test_json_parsed():
     assert parser.parse(content).success == [123]
 
 
-JSON_CONTENT = '{"container":{"test":"value"}}'
+JSON_CONTENT = '{"container":{"test":"value"},"another":"123"}'
 
 
 def test_multiple_parser_join():
@@ -161,3 +161,13 @@ def test_complex_config():
         '<xml><test>123 </test><test><inside> 234</inside></test></xml>'
     )
     assert parsed.test == ['123', '234']
+
+
+def test_json_parse():
+    parsed = JSONParser({'test': 'container > test'}).parse(JSON_CONTENT)
+    assert parsed.parse('another') == '123'
+
+
+def test_regexp_parse():
+    parsed = RegExpParser({'digits': '\d+'}).parse('123abc')
+    assert parsed.parse('[a-z]+') == 'abc'

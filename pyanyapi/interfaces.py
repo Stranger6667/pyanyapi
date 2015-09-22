@@ -202,6 +202,9 @@ class JSONInterface(BaseInterface):
 
         return self.get_from_json(self.parsed_content, settings)
 
+    def parse(self, query):
+        return self.get_from_json(self.parsed_content, query)
+
 
 class RegExpInterface(BaseInterface):
     """
@@ -222,3 +225,6 @@ class RegExpInterface(BaseInterface):
         if matches:
             return matches[0]
         return self.empty_result
+
+    def parse(self, expression):
+        return self.execute_method(expression)

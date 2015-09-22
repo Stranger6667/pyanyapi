@@ -129,6 +129,7 @@ If you need, you can execute more XPath queries at any time you want:
 ```Python
 from pyanyapi import HTMLParser
 
+
 >>> parser = HTMLParser({'header': 'string(.//h1/text())'})
 >>> api = parser.parse('<html><body><h1>This is</h1><p>test</p></body></html>')
 >>> api.header
@@ -143,6 +144,7 @@ Lxml provide interesting feature - objectified interface for XML. It converts wh
 
 ```Python
 from pyanyapi import XMLObjectifyParser
+
 
 >>> XMLObjectifyParser().parse('<xml><test>123</test></xml>').test
 123
@@ -170,6 +172,17 @@ from pyanyapi import JSONParser
 second
 ```
 
+And executes more queries after initial parsing:
+
+```Python
+from pyanyapi import JSONParser
+ 
+ 
+>>> api = JSONParser({'second': 'container > 1'}).parse('{"container":[],"second_container":[123]}')
+>>> api.parse('second_container > 0')
+123
+```
+
 ### Regular Expressions Interface
 
 In case, when data has bad format or is just very complex to be parsed with bundled tools, you can use parser based on regular expressions.
@@ -179,9 +192,21 @@ Settings is based on Python's regular expressions. It is most powerful parser, b
 ```Python
 from pyanyapi import RegExpParser
 
+
 >>> RegExpParser({'error_code': 'Error (\d+)'}).parse('Oh no!!! It is Error 100!!!').error_code
 100
 ```
+
+And executes more queries after initial parsing:
+
+```Python
+from pyanyapi import RegExpParser
+ 
+>>> api = RegExpParser({'digits': '\d+'}).parse('123abc')
+>>> parsed.parse('[a-z]+')
+abc
+```
+
 ### Custom Interface
 
 You can easily declare your own interface. For that you should define ```execute_method``` method. And optionally ```perform_parsing```.
