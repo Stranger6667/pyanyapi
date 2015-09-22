@@ -43,7 +43,7 @@ if sys.version_info < (3, 3):
 
 setup(
     name='pyanyapi',
-    version='0.1',
+    version='0.2',
     packages=['pyanyapi'],
     license='MIT',
     author='Dmitry Dygalo',
@@ -51,7 +51,7 @@ setup(
     maintainer='Dmitry Dygalo',
     maintainer_email='dadygalo@gmail.com',
     keywords=['parsing', 'interface', 'xml', 'json', 'API', 'XPath', 'regexp'],
-    description='Tools to create convenient interfaces over various types of data in declarative way.',
+    description='Tools for convenient interface creation over various types of data in declarative way.',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
