@@ -14,7 +14,7 @@ from .interfaces import (
 from .helpers import attach_attribute, attach_cached_property
 
 
-class ResponseParser(object):
+class BaseParser(object):
     """
     Fabric for some API-like components, which supposes to provide interface to different types of content.
     """
@@ -101,7 +101,7 @@ class ResponseParser(object):
         return CombinedParser(self, other)
 
 
-class CombinedParser(ResponseParser):
+class CombinedParser(BaseParser):
     """
     Combines multiple parsers in one. Its can be different types also.
     """
@@ -122,24 +122,24 @@ class CombinedParser(ResponseParser):
         return kwargs
 
 
-class HTMLParser(ResponseParser):
+class HTMLParser(BaseParser):
     interface_class = XPathInterface
 
 
-class XMLParser(ResponseParser):
+class XMLParser(BaseParser):
     interface_class = XMLInterface
 
     def prepare_content(self, content):
         return content.replace('encoding="UTF-8"', '').replace('encoding="utf-8"', '')
 
 
-class XMLObjectifyParser(ResponseParser):
+class XMLObjectifyParser(BaseParser):
     interface_class = XMLObjectifyInterface
 
 
-class JSONParser(ResponseParser):
+class JSONParser(BaseParser):
     interface_class = JSONInterface
 
 
-class RegExpResponseParser(ResponseParser):
+class RegExpParser(BaseParser):
     interface_class = RegExpInterface

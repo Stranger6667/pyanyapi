@@ -1,12 +1,12 @@
 # coding: utf-8
 import pytest
 
-from pyanyapi import HTMLParser, JSONParser, RegExpResponseParser, CombinedParser, interface_property, interface_method
+from pyanyapi import HTMLParser, JSONParser, RegExpParser, CombinedParser, interface_property, interface_method
 
 
 class EmptyValuesParser(CombinedParser):
     parsers = [
-        RegExpResponseParser({'test': '\d,\d'}),
+        RegExpParser({'test': '\d,\d'}),
         JSONParser(
             {
                 'test': {

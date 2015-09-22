@@ -110,6 +110,8 @@ class SecondChildParser(ParentParser):
 
 ### HTML & XML
 
+For HTML and XML based interfaces XPath 1.0 syntax is used for settings declaration. Unfortunately XPath 2.0 is not supported by lxml.
+XML is about the same as HTMLParser, but uses different lxml parser internally. 
 Here is an example of usage with ```requests```:
 
 ```Python
@@ -122,8 +124,29 @@ Here is an example of usage with ```requests```:
 Example Domain
 ```
 
-For HTML and XML based interfaces XPath 1.0 syntax is used for settings declaration. Unfortunately XPath 2.0 is not supported by lxml.
-XML is about the same as HTMLParser, but uses different lxml parser internally. 
+If you need, you can execute more XPath queries at any time you want:
+
+```Python
+from pyanyapi import HTMLParser
+
+>>> parser = HTMLParser({'header': 'string(.//h1/text())'})
+>>> api = parser.parse('<html><body><h1>This is</h1><p>test</p></body></html>')
+>>> api.header
+This is
+>>> api.parse('string(//p)')
+test
+```
+
+### XML Objectify
+
+Lxml provide interesting feature - objectified interface for XML. It converts whole XML to Python object. This parser doesn't requrie any settings. E.g:
+
+```Python
+from pyanyapi import XMLObjectifyParser
+
+>>> XMLObjectifyParser().parse('<xml><test>123</test></xml>').test
+123
+```
 
 ### JSON
 
@@ -137,6 +160,16 @@ from pyanyapi import JSONParser
 123
 ```
 
+Or you can access values in lists by index:
+
+```Python
+from pyanyapi import JSONParser
+ 
+ 
+>>> JSONParser({'second': 'container > 1'}).parse('{"container":["first", "second", "third"]}').second
+second
+```
+
 ### Regular Expressions Interface
 
 In case, when data has bad format or is just very complex to be parsed with bundled tools, you can use parser based on regular expressions.
@@ -144,15 +177,36 @@ Settings is based on Python's regular expressions. It is most powerful parser, b
 
 
 ```Python
-from pyanyapi import RegExpResponseParser
+from pyanyapi import RegExpParser
 
->>> RegExpResponseParser({'error_code': 'Error (\d+)'}).parse('Oh no!!! It is Error 100!!!').error_code
+>>> RegExpParser({'error_code': 'Error (\d+)'}).parse('Oh no!!! It is Error 100!!!').error_code
 100
 ```
 ### Custom Interface
 
-You can easily declare your own interface.
+You can easily declare your own interface. For that you should define ```execute_method``` method. And optionally ```perform_parsing```.
+Here is an example of naive CSVInterface, which provide an ability to get column value by index. Also you should create separate parser for that.
 
+```Python
+from pyanyapi import BaseInterface, BaseParser
+
+
+class CSVInterface(BaseInterface):
+
+    def perform_parsing(self):
+        return self.content.split(',')
+
+    def execute_method(self, settings):
+        return self.parsed_content[settings]
+
+
+class CSVParser(BaseParser):
+    interface_class = CSVInterface
+
+
+>>> CSVParser({'second': 1}).parse('1,2,3').second
+2
+```
 
 Extending interfaces
 --------------------
@@ -215,6 +269,23 @@ Complex content parsing
 ### Combined parsers
 
 In situations, when particular content type is unknown before parsing, you can create combined parser, which allows you to use multiply different parsers transparently.
+E.g. some server usually returns JSON, but in cases of server errors it returns HTML pages with some text. Then:
+
+```Python
+from pyanyapi import CombinedParser, HTMLParser, JSONParser
+
+class Parser(CombinedParser):
+    parsers = [
+        JSONParser({'test': 'test'}),
+        HTMLParser({'error': 'string(//span)'})
+    ]
+
+>>> parser = Parser()
+>>> parser.parse('{"test": "Text"}').content
+Text
+>>> parser.parse('<body><span>123</span></body>').error
+123
+```
 
 ### Another example
 
