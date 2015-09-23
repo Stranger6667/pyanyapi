@@ -28,9 +28,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-requirements = [
-    'lxml',
-]
+requirements = []
 
 test_requirements = [
     'pytest>=2.5.0',
@@ -40,6 +38,11 @@ test_requirements = [
 
 if sys.version_info < (3, 3):
     test_requirements.append('mock==1.0.1')
+
+
+if not (hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 3):
+    requirements.append('lxml')
+
 
 setup(
     name='pyanyapi',

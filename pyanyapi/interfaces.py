@@ -5,8 +5,7 @@ Classes to be filled with interface declarations.
 import json
 import re
 
-from lxml import etree, objectify
-
+from ._compat import etree, objectify, XMLParser, HTMLParser
 from .exceptions import ResponseParseError
 
 
@@ -93,7 +92,7 @@ class XPathInterface(BaseInterface):
     'children' key usually uses for modification of result of 'base' expression
     before concatenation.
     """
-    parser_class = etree.HTMLParser
+    parser_class = HTMLParser
     empty_result = ''
 
     def perform_parsing(self):
@@ -119,7 +118,7 @@ class XPathInterface(BaseInterface):
 
 
 class XMLInterface(XPathInterface):
-    parser_class = etree.XMLParser
+    parser_class = XMLParser
 
 
 class XMLObjectifyInterface(BaseInterface):

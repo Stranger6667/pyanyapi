@@ -1,7 +1,9 @@
 # coding: utf-8
+import sys
+
 import pytest
 
-from pyanyapi import HTMLParser, JSONParser, RegExpParser, CombinedParser, interface_property, interface_method
+from pyanyapi import JSONParser, RegExpParser, CombinedParser, interface_property, interface_method
 
 
 class EmptyValuesParser(CombinedParser):
@@ -38,18 +40,8 @@ def empty_values_parser():
 
 class DummyParser(CombinedParser):
     parsers = (
-        JSONParser(
-            {
-                'success': {
-                    'base': 'container > test',
-                }
-            }
-        ),
-        HTMLParser(
-            {
-                'test': {'base': 'string(//a/@href)'}
-            }
-        ),
+        JSONParser({'success': 'container > test'}),
+        RegExpParser({'test': 'href=\'(.*)\''}),
     )
 
     @interface_property
@@ -79,3 +71,8 @@ class ChildParser(ParentParser):
         'child1': 'test3',
         'child2': 'test4'
     }
+
+PYPY3 = hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 3
+
+not_pypy3 = pytest.mark.skipif(PYPY3, reason='Lxml is not supported on PyPy3')
+only_pypy3 = pytest.mark.skipif(not PYPY3, reason='Only on PyPy3')
