@@ -11,3 +11,8 @@ except ImportError:
     objectify = None
     HTMLParser = None
     XMLParser = None
+
+try:
+    import ujson as json
+except ImportError:
+    import json

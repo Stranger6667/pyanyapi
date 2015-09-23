@@ -7,6 +7,10 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
 
+PYPY = hasattr(sys, 'pypy_translation_info')
+PYPY3 = PYPY and sys.version_info[0] == 3
+
+
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass into py.test")]
 
@@ -40,7 +44,9 @@ if sys.version_info < (3, 3):
     test_requirements.append('mock==1.0.1')
 
 
-if not (hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 3):
+if not PYPY:
+    requirements.append('ujson')
+if not PYPY3:
     requirements.append('lxml')
 
 

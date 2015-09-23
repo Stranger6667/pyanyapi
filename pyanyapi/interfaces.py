@@ -2,10 +2,9 @@
 """
 Classes to be filled with interface declarations.
 """
-import json
 import re
 
-from ._compat import etree, objectify, XMLParser, HTMLParser
+from ._compat import json, etree, objectify, XMLParser, HTMLParser
 from .exceptions import ResponseParseError
 
 
