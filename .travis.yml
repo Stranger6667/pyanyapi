@@ -8,7 +8,7 @@ env:
   - TOX_ENV=py35
   - TOX_ENV=pypy
   - TOX_ENV=pypy3
-  - TOX_ENV=py27 JYTHON=true
+  - JYTHON=true
 install:
   - pip install tox codecov
 before_install:
