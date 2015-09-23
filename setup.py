@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import os
+import platform
 import sys
 
 from setuptools import setup
@@ -9,6 +10,7 @@ from setuptools.command.test import test as TestCommand
 
 PYPY = hasattr(sys, 'pypy_translation_info')
 PYPY3 = PYPY and sys.version_info[0] == 3
+JYTHON = platform.system() == 'Java'
 
 
 class PyTest(TestCommand):
@@ -44,10 +46,11 @@ if sys.version_info < (3, 3):
     test_requirements.append('mock==1.0.1')
 
 
-if not PYPY:
-    requirements.append('ujson')
-if not PYPY3:
-    requirements.append('lxml')
+if not JYTHON:
+    if not PYPY:
+        requirements.append('ujson')
+    if not PYPY3:
+        requirements.append('lxml')
 
 
 setup(

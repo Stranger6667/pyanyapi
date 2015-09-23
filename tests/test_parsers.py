@@ -2,33 +2,33 @@
 import pytest
 
 from ._compat import patch
-from .conftest import ChildParser, not_pypy3, only_pypy3
+from .conftest import ChildParser, lxml_is_supported, lxml_is_not_supported
 from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, RegExpParser
 from pyanyapi.exceptions import ResponseParseError
 
 
-@not_pypy3
+@lxml_is_supported
 def test_xml_objectify_parser():
     parsed = XMLObjectifyParser().parse('<xml><test>123</test></xml>')
     assert parsed.test == 123
     assert parsed.not_existing is None
 
 
-@not_pypy3
+@lxml_is_supported
 def test_xml_objectify_parser_error():
     parsed = XMLObjectifyParser().parse('<xml><test>123')
     with pytest.raises(ResponseParseError):
         parsed.test
 
 
-@not_pypy3
+@lxml_is_supported
 def test_xml_parser_error():
     parsed = XMLParser({'test': None}).parse('<xml><test>123')
     with pytest.raises(ResponseParseError):
         parsed.test
 
 
-@not_pypy3
+@lxml_is_supported
 def test_xml_parsed():
     content = '''<?xml version="1.0" encoding="UTF-8"?>
     <response>
@@ -136,7 +136,7 @@ def test_efficient_parsing(empty_values_parser):
         assert not regexp_parser.called
 
 
-@not_pypy3
+@lxml_is_supported
 def test_simple_config_xml_parser():
     parsed = XMLParser({'test': 'string(//test/text())'}).parse('<xml><test>123</test></xml>')
     assert parsed.test == '123'
@@ -155,7 +155,7 @@ def test_settings_inheritance():
     assert parser.settings['parent1'] == 'test1'
 
 
-@not_pypy3
+@lxml_is_supported
 def test_complex_config():
     parsed = XMLParser({'test': {'base': '//test', 'children': 'text()|*//text()'}}).parse(
         '<xml><test>123 </test><test><inside> 234</inside></test></xml>'
@@ -173,7 +173,7 @@ def test_regexp_parse():
     assert parsed.parse('[a-z]+') == 'abc'
 
 
-@only_pypy3
+@lxml_is_not_supported
 def test_lxml_not_supported():
     with pytest.raises(AssertionError):
         XMLParser({'test': '//p'}).parse('')

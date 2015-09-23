@@ -1,4 +1,5 @@
 # coding: utf-8
+import platform
 import sys
 
 import pytest
@@ -73,6 +74,7 @@ class ChildParser(ParentParser):
     }
 
 PYPY3 = hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 3
+JYTHON = platform.system() == 'Java'
 
-not_pypy3 = pytest.mark.skipif(PYPY3, reason='Lxml is not supported on PyPy3')
-only_pypy3 = pytest.mark.skipif(not PYPY3, reason='Only on PyPy3')
+lxml_is_supported = pytest.mark.skipif(PYPY3 or JYTHON, reason='lxml is not supported')
+lxml_is_not_supported = pytest.mark.skipif(not (PYPY3 or JYTHON), reason='Only on if lxml is supported')
