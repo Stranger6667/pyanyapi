@@ -133,7 +133,7 @@ class XMLParser(BaseParser):
         return content.replace('encoding="UTF-8"', '').replace('encoding="utf-8"', '')
 
 
-class XMLObjectifyParser(BaseParser):
+class XMLObjectifyParser(XMLParser):
     interface_class = XMLObjectifyInterface
 
 
