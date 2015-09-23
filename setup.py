@@ -43,7 +43,7 @@ if sys.version_info < (3, 3):
 
 setup(
     name='pyanyapi',
-    version='0.2',
+    version='0.2.1',
     packages=['pyanyapi'],
     license='MIT',
     author='Dmitry Dygalo',
