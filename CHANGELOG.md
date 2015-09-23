@@ -1,10 +1,13 @@
 History
 -------
 
-0.3 - TBD
+0.3 - 24.09.2015
 ----------------
 
 * Add partial support for PyPy3 (#7).
+* Add partial support for Jython (#6).
+* Add ujson as dependency where it is possible (#4).
+* Lxml will not be installed where it is not supported (#3).
 
 0.2.1 - 23.09.2015
 ----------------

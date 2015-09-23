@@ -55,7 +55,7 @@ if not JYTHON:
 
 setup(
     name='pyanyapi',
-    version='0.2.1',
+    version='0.3',
     packages=['pyanyapi'],
     license='MIT',
     author='Dmitry Dygalo',
@@ -79,6 +79,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
+        'Programming Language :: Python :: Implementation :: Jython',
     ],
     cmdclass={'test': PyTest},
     include_package_data=True,
