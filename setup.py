@@ -53,6 +53,7 @@ if not JYTHON:
 
 setup(
     name='pyanyapi',
+    url='https://github.com/Stranger6667/pyanyapi',
     version='0.3',
     packages=['pyanyapi'],
     license='MIT',
