@@ -98,7 +98,7 @@ class XPathInterface(BaseInterface):
         try:
             return etree.fromstring(self.content, self.parser_class())
         except etree.XMLSyntaxError:
-            raise ResponseParseError('XML response can not be parsed.')
+            raise ResponseParseError('XML data can not be parsed.')
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
@@ -139,7 +139,7 @@ class XMLObjectifyInterface(BaseInterface):
         try:
             return objectify.fromstring(self.content)
         except etree.XMLSyntaxError:
-            raise ResponseParseError('XML response can not be parsed.')
+            raise ResponseParseError('XML data can not be parsed.')
 
     def __getattribute__(self, item):
         try:
@@ -169,7 +169,7 @@ class JSONInterface(BaseInterface):
         try:
             return json.loads(self.content)
         except (ValueError, TypeError):
-            raise ResponseParseError('JSON response can not be parsed.')
+            raise ResponseParseError('JSON data can not be parsed.')
 
     @classmethod
     def get_from_json(cls, text, data):
@@ -183,7 +183,7 @@ class JSONInterface(BaseInterface):
                 else:
                     try:
                         result = result[int(action)]
-                    except (IndexError, TypeError):
+                    except (IndexError, TypeError, ValueError):
                         return cls.empty_result
         return result
 

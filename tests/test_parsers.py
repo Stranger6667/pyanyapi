@@ -171,13 +171,15 @@ def test_complex_config():
 
 
 def test_json_parse():
-    parsed = JSONParser({'test': 'container > test'}).parse(JSON_CONTENT)
-    assert parsed.parse('another') == '123'
+    assert JSONParser({'test': 'container > test'}).parse(JSON_CONTENT).parse('another') == '123'
+
+
+def test_json_value_error_parse():
+    assert JSONParser({'test': 'container > test'}).parse('{"container":"1"}').test is None
 
 
 def test_regexp_parse():
-    parsed = RegExpParser({'digits': '\d+'}).parse('123abc')
-    assert parsed.parse('[a-z]+') == 'abc'
+    assert RegExpParser({'digits': '\d+'}).parse('123abc').parse('[a-z]+') == 'abc'
 
 
 @lxml_is_not_supported
