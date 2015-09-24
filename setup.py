@@ -39,12 +39,12 @@ requirements = []
 test_requirements = [
     'pytest==2.8.0',
     'pytest-cov==1.8',
-    'coverage==3.7.1'
 ]
 
 if sys.version_info < (3, 3):
     test_requirements.append('mock==1.0.1')
-
+if sys.version_info[:2] == (3, 2):
+    test_requirements.append('coverage==3.7.1')
 
 if not JYTHON:
     if not PYPY:
