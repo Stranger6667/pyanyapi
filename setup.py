@@ -80,6 +80,8 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: Jython',
+        'Topic :: Text Processing :: General',
+        'Topic :: Utilities',
     ],
     cmdclass={'test': PyTest},
     include_package_data=True,
