@@ -7,6 +7,17 @@ from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, RegExpParser
 from pyanyapi.exceptions import ResponseParseError
 
 
+HTML_CONTENT = "<html><body><a href='#test'></body></html>"
+XML_CONTENT = '''<?xml version="1.0" encoding="UTF-8"?>
+<response>
+<id>32e9a4a2</id>
+<test-mode>1</test-mode>
+<type>accept</type>
+</response>
+'''
+JSON_CONTENT = '{"container":{"test":"value"},"another":"123"}'
+
+
 @lxml_is_supported
 def test_xml_objectify_parser():
     parsed = XMLObjectifyParser().parse('<xml><test>123</test></xml>')
@@ -29,21 +40,21 @@ def test_xml_parser_error():
 
 
 @lxml_is_supported
-def test_xml_parsed():
-    content = '''<?xml version="1.0" encoding="UTF-8"?>
-    <response>
-    <id>32e9a4a2</id>
-    <test-mode>1</test-mode>
-    <type>accept</type>
-    </response>
-    '''
-    parser = XMLParser({
-        'success': {
-            'base': '//test-mode/text()'
-        }
-    })
-    assert parser.parse(content).success == ['1']
-    assert parser.parse(content).parse('string(//id/text())') == '32e9a4a2'
+@pytest.mark.parametrize(
+    'settings', (
+        {'success': {'base': '//test-mode/text()'}},
+        {'success': '//test-mode/text()'},
+    )
+)
+def test_xml_parsed(settings):
+    parsed = XMLParser(settings).parse(XML_CONTENT)
+    assert parsed.success == ['1']
+    assert parsed.parse('string(//id/text())') == '32e9a4a2'
+
+
+@lxml_is_supported
+def test_xml_simple_settings():
+    assert XMLParser({'id': {'base': 'string(//id/text())'}}).parse(XML_CONTENT).id == '32e9a4a2'
 
 
 def test_json_parsed():
@@ -79,15 +90,11 @@ def test_json_parsed():
     assert parser.parse(content).success == [123]
 
 
-JSON_CONTENT = '{"container":{"test":"value"},"another":"123"}'
-
-
 def test_multiple_parser_join():
     first_parser = RegExpParser({'test': 'href=\'(.*)\''})
     second_parser = JSONParser({'success': 'container > test'})
-    html_content = "<html><body><a href='#test'></body></html>"
     for result_parser in ((first_parser & second_parser), (second_parser & first_parser)):
-        assert result_parser.parse(html_content).test == '#test'
+        assert result_parser.parse(HTML_CONTENT).test == '#test'
         assert result_parser.parse(JSON_CONTENT).success == 'value'
     third_parser = JSONParser({
         'fail': {
@@ -105,7 +112,7 @@ def test_multiply_parsers_declaration(dummy_parser):
     assert parsed.method('-123') == 'value-123'
     assert parsed.test is None
 
-    parsed = dummy_parser.parse("<html><body><a href='#test'></body></html>")
+    parsed = dummy_parser.parse(HTML_CONTENT)
     assert parsed.test == '#test'
     assert parsed.success is None
 
