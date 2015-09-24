@@ -4,6 +4,8 @@ Classes to be filled with interface declarations.
 """
 import re
 
+import yaml
+
 from ._compat import json, etree, objectify, XMLParser, HTMLParser
 from .exceptions import ResponseParseError
 
@@ -153,10 +155,9 @@ class XMLObjectifyInterface(BaseInterface):
                 return None
 
 
-class JSONInterface(BaseInterface):
+class DictInterface(BaseInterface):
     """
-    Interface for JSON. Based on PostgreSQL statements syntax.
-    Settings example:
+    Interface for python dictionaries. Based on PostgreSQL statements syntax.
 
     {
         'external_id': 'container > id'
@@ -165,14 +166,8 @@ class JSONInterface(BaseInterface):
     which will get "123" from {"container":{"id":"123"}}
     """
 
-    def perform_parsing(self):
-        try:
-            return json.loads(self.content)
-        except (ValueError, TypeError):
-            raise ResponseParseError('JSON data can not be parsed.')
-
     @classmethod
-    def get_from_json(cls, text, data):
+    def get_from_dict(cls, text, data):
         action_list = data.split('>')
         result = text
         for action in action_list:
@@ -189,19 +184,37 @@ class JSONInterface(BaseInterface):
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
-            result = self.get_from_json(self.parsed_content, settings['base'])
+            result = self.get_from_dict(self.parsed_content, settings['base'])
 
             if settings.get('children'):
                 children = settings.get('children')
                 return [
-                    self.get_from_json(r, children) or self.empty_result for r in result
+                    self.get_from_dict(r, children) or self.empty_result for r in result
                 ] if result else self.empty_result
             return result
 
-        return self.get_from_json(self.parsed_content, settings)
+        return self.get_from_dict(self.parsed_content, settings)
 
     def parse(self, query):
-        return self.get_from_json(self.parsed_content, query)
+        return self.get_from_dict(self.parsed_content, query)
+
+
+class JSONInterface(DictInterface):
+
+    def perform_parsing(self):
+        try:
+            return json.loads(self.content)
+        except (ValueError, TypeError):
+            raise ResponseParseError('JSON data can not be parsed.')
+
+
+class YAMLInterface(DictInterface):
+
+    def perform_parsing(self):
+        try:
+            return yaml.load(self.content)
+        except yaml.error.YAMLError:
+            raise ResponseParseError('YAML data can not be parsed.')
 
 
 class RegExpInterface(BaseInterface):

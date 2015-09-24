@@ -5,6 +5,7 @@ from ._compat import patch
 from .conftest import ChildParser, lxml_is_supported, lxml_is_not_supported
 from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, RegExpParser
 from pyanyapi.exceptions import ResponseParseError
+from pyanyapi.parsers import YAMLParser
 
 
 HTML_CONTENT = "<html><body><a href='#test'></body></html>"
@@ -16,6 +17,7 @@ XML_CONTENT = '''<?xml version="1.0" encoding="UTF-8"?>
 </response>
 '''
 JSON_CONTENT = '{"container":{"test":"value"},"another":"123"}'
+YAML_CONTENT = 'container:\n    test: "123"'
 
 
 @lxml_is_supported
@@ -35,6 +37,12 @@ def test_xml_objectify_parser_error():
 @lxml_is_supported
 def test_xml_parser_error():
     parsed = XMLParser({'test': None}).parse('<xml><test>123')
+    with pytest.raises(ResponseParseError):
+        parsed.test
+
+
+def test_yaml_parser_error():
+    parsed = YAMLParser({'test': 'test'}).parse('||')
     with pytest.raises(ResponseParseError):
         parsed.test
 
@@ -180,6 +188,10 @@ def test_json_value_error_parse():
 
 def test_regexp_parse():
     assert RegExpParser({'digits': '\d+'}).parse('123abc').parse('[a-z]+') == 'abc'
+
+
+def test_yaml_parse():
+    assert YAMLParser({'test': 'container > test'}).parse(YAML_CONTENT).test == '123'
 
 
 @lxml_is_not_supported

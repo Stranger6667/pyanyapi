@@ -34,7 +34,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-requirements = []
+requirements = ['PyYAML==3.11']
 test_requirements = ['pytest==2.8.0']
 
 

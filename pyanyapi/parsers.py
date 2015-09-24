@@ -9,6 +9,7 @@ from .interfaces import (
     XMLInterface,
     XMLObjectifyInterface,
     JSONInterface,
+    YAMLInterface,
     RegExpInterface,
     CombinedInterface
 )
@@ -147,6 +148,10 @@ class XMLObjectifyParser(XMLParser):
 
 class JSONParser(BaseParser):
     interface_class = JSONInterface
+
+
+class YAMLParser(BaseParser):
+    interface_class = YAMLInterface
 
 
 class RegExpParser(BaseParser):

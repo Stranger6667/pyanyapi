@@ -202,6 +202,18 @@ And executes more queries after initial parsing:
     >>> api.parse('second_container > 0')
     123
 
+YAML
+~~~~
+Equal to JSON parser, but works with YAML data.
+
+.. code:: python
+
+    from pyanyapi import YAMLParser
+
+
+    >>> YAMLParser({'test': 'container > test'}).parse('container:\n    test: "123"').test
+    123
+
 Regular Expressions Interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

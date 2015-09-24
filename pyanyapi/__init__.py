@@ -9,13 +9,18 @@ from .parsers import (
     XMLParser,
     XMLObjectifyParser,
     JSONParser,
+    YAMLParser,
     RegExpParser,
 )
 from .interfaces import (
     BaseInterface,
+    CombinedInterface,
     XPathInterface,
     XMLInterface,
+    XMLObjectifyInterface,
+    DictInterface,
     JSONInterface,
+    YAMLInterface,
     RegExpInterface,
 )
 from .decorators import interface_property, interface_method
