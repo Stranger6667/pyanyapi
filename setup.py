@@ -37,8 +37,8 @@ class PyTest(TestCommand):
 requirements = []
 
 test_requirements = [
-    'pytest>=2.5.0',
-    'pytest-cov==1.8.2',
+    'pytest==2.8.0',
+    'pytest-cov==1.8',
     'coverage==3.7.1'
 ]
 
