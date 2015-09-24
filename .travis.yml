@@ -19,7 +19,7 @@ before_install:
 
 script:
   - if [ "$JYTHON" ]; then jython setup.py test; fi
-  - if [ "$PYTHON35" ]; then python setup.py test; fi
+  - if [ "$PYTHON35" ]; then python setup.py test --pytest-args="--cov=pyanyapi --cov-report xml"; fi
   - if [ "$TOX_ENV" ]; then tox -e $TOX_ENV; fi
 after_success:
   - codecov
