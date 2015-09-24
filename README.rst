@@ -157,7 +157,7 @@ XML Objectify
 ~~~~~~~~~~~~~
 
 Lxml provide interesting feature - objectified interface for XML. It
-converts whole XML to Python object. This parser doesn't requrie any
+converts whole XML to Python object. This parser doesn't require any
 settings. E.g:
 
 .. code:: python
