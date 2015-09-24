@@ -38,7 +38,8 @@ requirements = []
 
 test_requirements = [
     'pytest>=2.5.0',
-    'pytest-cov>=1.7',
+    'pytest-cov==1.8.2',
+    'coverage==3.7.1'
 ]
 
 if sys.version_info < (3, 3):
@@ -50,7 +51,6 @@ if not JYTHON:
         requirements.append('ujson')
     if not PYPY3:
         requirements.append('lxml')
-    requirements.append('coverage==3.7.1')
 
 
 setup(
