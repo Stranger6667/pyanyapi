@@ -10,6 +10,9 @@ from ._compat import json, etree, objectify, XMLParser, HTMLParser
 from .exceptions import ResponseParseError
 
 
+DICT_LOOKUP = ' > '
+
+
 class BaseInterface(object):
     """
     Basic dynamically generated interface.
@@ -166,20 +169,19 @@ class DictInterface(BaseInterface):
     which will get "123" from {"container":{"id":"123"}}
     """
 
-    @classmethod
-    def get_from_dict(cls, text, data):
-        action_list = data.split('>')
+    def get_from_dict(self, text, data):
+        action_list = data.split(DICT_LOOKUP)
         result = text
         for action in action_list:
             action = action.strip()
             if result:
                 if isinstance(result, dict):
-                    result = result.get(action, cls.empty_result)
+                    result = result.get(action, self.empty_result)
                 else:
                     try:
                         result = result[int(action)]
                     except (IndexError, TypeError, ValueError):
-                        return cls.empty_result
+                        return self.empty_result
         return result
 
     def execute_method(self, settings):
@@ -215,6 +217,25 @@ class YAMLInterface(DictInterface):
             return yaml.load(self.content)
         except yaml.error.YAMLError:
             raise ResponseParseError('YAML data can not be parsed.')
+
+
+class AJAXInterface(JSONInterface):
+    """
+    Allows to execute XPath, combined with dictionary-based lookups from DictInterface.
+
+    {
+        'p': 'container > string(//p)'
+    }
+
+    which will get "p_content" from {"container":"<p>p_content</p>"}
+    """
+
+    def get_from_dict(self, text, data):
+        json_part, xpath_part = data.rsplit(DICT_LOOKUP, 1)
+        if not hasattr(self, 'inner_interface'):
+            inner_content = super(AJAXInterface, self).get_from_dict(text, json_part)
+            self.inner_interface = XPathInterface(inner_content)
+        return self.inner_interface.parse(xpath_part)
 
 
 class RegExpInterface(BaseInterface):

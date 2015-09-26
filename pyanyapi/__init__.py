@@ -10,6 +10,7 @@ from .parsers import (
     XMLObjectifyParser,
     JSONParser,
     YAMLParser,
+    AJAXParser,
     RegExpParser,
 )
 from .interfaces import (
@@ -21,6 +22,7 @@ from .interfaces import (
     DictInterface,
     JSONInterface,
     YAMLInterface,
+    AJAXInterface,
     RegExpInterface,
 )
 from .decorators import interface_property, interface_method

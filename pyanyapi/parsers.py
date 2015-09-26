@@ -10,6 +10,7 @@ from .interfaces import (
     XMLObjectifyInterface,
     JSONInterface,
     YAMLInterface,
+    AJAXInterface,
     RegExpInterface,
     CombinedInterface
 )
@@ -152,6 +153,10 @@ class JSONParser(BaseParser):
 
 class YAMLParser(BaseParser):
     interface_class = YAMLInterface
+
+
+class AJAXParser(LXMLParser):
+    interface_class = AJAXInterface
 
 
 class RegExpParser(BaseParser):
