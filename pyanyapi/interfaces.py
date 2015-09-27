@@ -229,12 +229,13 @@ class AJAXInterface(JSONInterface):
 
     which will get "p_content" from {"container":"<p>p_content</p>"}
     """
+    inner_interface_class = XPathInterface
 
     def get_from_dict(self, text, data):
         json_part, xpath_part = data.rsplit(DICT_LOOKUP, 1)
         if not hasattr(self, 'inner_interface'):
             inner_content = super(AJAXInterface, self).get_from_dict(text, json_part)
-            self.inner_interface = XPathInterface(inner_content)
+            self.inner_interface = self.inner_interface_class(inner_content)
         return self.inner_interface.parse(xpath_part)
 
 
