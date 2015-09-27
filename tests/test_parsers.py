@@ -17,7 +17,8 @@ XML_CONTENT = '''<?xml version="1.0" encoding="UTF-8"?>
 '''
 JSON_CONTENT = '{"container":{"test":"value"},"another":"123"}'
 YAML_CONTENT = 'container:\n    test: "123"'
-AJAX_CONTENT = '{"content": "<p>Pcontent</p><span>SPANcontent</span>"}'
+AJAX_CONTENT = '{"content": "<p>Pcontent</p><span>SPANcontent</span>",' \
+               '"second_part":"<p>second_p</p>"}'
 
 
 @lxml_is_supported
@@ -205,3 +206,21 @@ def test_ajax_parser():
     parsed = AJAXParser({'p': 'content > string(//p)', 'span': 'content > string(//span)'}).parse(AJAX_CONTENT)
     assert parsed.p == 'Pcontent'
     assert parsed.span == 'SPANcontent'
+
+
+@lxml_is_supported
+def test_ajax_parser_cache():
+    parsed = AJAXParser({
+        'p': 'content > string(//p)',
+        'span': 'content > string(//span)',
+        'second': 'second_part > string(//p)'
+    }).parse(AJAX_CONTENT)
+    assert parsed.p == 'Pcontent'
+    inner_interface = parsed._inner_cache['content']
+    with patch.object(inner_interface, 'parse', wraps=inner_interface.parse) as patched:
+        assert parsed.span == 'SPANcontent'
+        assert len(parsed._inner_cache) == 1
+        assert patched.call_count == 1
+        assert parsed.second == 'second_p'
+        assert patched.call_count == 1
+        assert len(parsed._inner_cache) == 2
