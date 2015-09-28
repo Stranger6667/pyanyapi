@@ -3,9 +3,8 @@ import pytest
 
 from ._compat import patch
 from .conftest import ChildParser, lxml_is_supported, lxml_is_not_supported
-from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, RegExpParser
+from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, YAMLParser, RegExpParser, AJAXParser
 from pyanyapi.exceptions import ResponseParseError
-from pyanyapi.parsers import YAMLParser
 
 
 HTML_CONTENT = "<html><body><a href='#test'></body></html>"
@@ -18,6 +17,8 @@ XML_CONTENT = '''<?xml version="1.0" encoding="UTF-8"?>
 '''
 JSON_CONTENT = '{"container":{"test":"value"},"another":"123"}'
 YAML_CONTENT = 'container:\n    test: "123"'
+AJAX_CONTENT = '{"content": "<p>Pcontent</p><span>SPANcontent</span>",' \
+               '"second_part":"<p>second_p</p>","third":{"inner":"<p>third_p</p>"}}'
 
 
 @lxml_is_supported
@@ -198,3 +199,39 @@ def test_yaml_parse():
 def test_lxml_not_supported():
     with pytest.raises(AssertionError):
         XMLParser({'test': '//p'}).parse('')
+
+
+@lxml_is_supported
+def test_ajax_parser():
+    parsed = AJAXParser({'p': 'content > string(//p)', 'span': 'content > string(//span)'}).parse(AJAX_CONTENT)
+    assert parsed.p == 'Pcontent'
+    assert parsed.span == 'SPANcontent'
+    assert parsed.parse('third > inner > string(//p)') == 'third_p'
+
+
+@lxml_is_supported
+def test_ajax_parser_cache():
+    parsed = AJAXParser({
+        'p': 'content > string(//p)',
+        'span': 'content > string(//span)',
+        'second': 'second_part > string(//p)'
+    }).parse(AJAX_CONTENT)
+    assert parsed.p == 'Pcontent'
+    inner_interface = parsed._inner_cache['content']
+    with patch.object(inner_interface, 'parse', wraps=inner_interface.parse) as patched:
+        assert parsed.span == 'SPANcontent'
+        assert len(parsed._inner_cache) == 1
+        assert patched.call_count == 1
+        assert parsed.second == 'second_p'
+        assert patched.call_count == 1
+        assert len(parsed._inner_cache) == 2
+
+
+@lxml_is_supported
+def test_ajax_parser_invalid_settings():
+    parsed = AJAXParser({
+        'valid': 'third > inner > string(//p)',
+        'invalid': 'third > string(//p)',
+    }).parse(AJAX_CONTENT)
+    assert parsed.valid == 'third_p'
+    assert parsed.invalid == ''

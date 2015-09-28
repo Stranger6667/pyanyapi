@@ -10,6 +10,9 @@ from ._compat import json, etree, objectify, XMLParser, HTMLParser
 from .exceptions import ResponseParseError
 
 
+DICT_LOOKUP = ' > '
+
+
 class BaseInterface(object):
     """
     Basic dynamically generated interface.
@@ -166,20 +169,19 @@ class DictInterface(BaseInterface):
     which will get "123" from {"container":{"id":"123"}}
     """
 
-    @classmethod
-    def get_from_dict(cls, text, data):
-        action_list = data.split('>')
+    def get_from_dict(self, text, data):
+        action_list = data.split(DICT_LOOKUP)
         result = text
         for action in action_list:
             action = action.strip()
             if result:
                 if isinstance(result, dict):
-                    result = result.get(action, cls.empty_result)
+                    result = result.get(action, self.empty_result)
                 else:
                     try:
                         result = result[int(action)]
                     except (IndexError, TypeError, ValueError):
-                        return cls.empty_result
+                        return self.empty_result
         return result
 
     def execute_method(self, settings):
@@ -215,6 +217,37 @@ class YAMLInterface(DictInterface):
             return yaml.load(self.content)
         except yaml.error.YAMLError:
             raise ResponseParseError('YAML data can not be parsed.')
+
+
+class AJAXInterface(JSONInterface):
+    """
+    Allows to execute XPath, combined with dictionary-based lookups from DictInterface.
+
+    {
+        'p': 'container > string(//p)'
+    }
+
+    which will get "p_content" from {"container":"<p>p_content</p>"}
+    """
+    inner_interface_class = XPathInterface
+
+    def __init__(self, *args, **kwargs):
+        self._inner_cache = {}
+        super(AJAXInterface, self).__init__(*args, **kwargs)
+
+    def get_inner_interface(self, text, json_part):
+        if not json_part in self._inner_cache:
+            inner_content = super(AJAXInterface, self).get_from_dict(text, json_part)
+            self._inner_cache[json_part] = self.inner_interface_class(inner_content)
+        return self._inner_cache[json_part]
+
+    def get_from_dict(self, text, data):
+        json_part, xpath_part = data.rsplit(DICT_LOOKUP, 1)
+        inner_interface = self.get_inner_interface(text, json_part)
+        try:
+            return inner_interface.parse(xpath_part)
+        except (etree.XMLSyntaxError, ValueError):
+            return inner_interface.empty_result
 
 
 class RegExpInterface(BaseInterface):
