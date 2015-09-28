@@ -241,6 +241,33 @@ And executes more queries after initial parsing:
     >>> api.parse('[a-z]+')
     abc
 
+AJAX Interface
+~~~~~~~~~~~~~~
+
+AJAX is very popular technology and often use JSON data with HTML values. Here is an example:
+
+.. code:: python
+
+    from pyanyapi import AJAXParser
+
+
+    >>> api = AJAXParser({'p': 'content > string(//p)'}).parse('{"content": "<p>Pcontent</p>"}')
+    >>> api.p
+    Pcontent
+
+It use combination of XPath queries and PostgreSQL-based JSON lookups.
+Custom queries execution is also available:
+
+.. code:: python
+
+    from pyanyapi import AJAXParser
+
+
+    >>> api = AJAXParser().parse('{"content": "<p>Pcontent</p><span>123</span>"}')
+    >>> api.parse('content > string(//span)')
+    123
+
+
 Custom Interface
 ~~~~~~~~~~~~~~~~
 
@@ -387,7 +414,8 @@ You can work with such data in following way:
     >>> api.text
     Text
 
-Probably such parser will be bundled in library in future.
+Now AJAXParser is bundled in pyanyapi, but it works different.
+But anyway this example can be helpful for building custom parsers
 
 Python support
 --------------

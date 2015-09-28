@@ -206,6 +206,7 @@ def test_ajax_parser():
     parsed = AJAXParser({'p': 'content > string(//p)', 'span': 'content > string(//span)'}).parse(AJAX_CONTENT)
     assert parsed.p == 'Pcontent'
     assert parsed.span == 'SPANcontent'
+    assert parsed.parse('third > inner > string(//p)') == 'third_p'
 
 
 @lxml_is_supported
