@@ -238,7 +238,7 @@ And executes more queries after initial parsing:
 
 
     >>> api = RegExpParser({'digits': '\d+'}).parse('123abc')
-    >>> parsed.parse('[a-z]+')
+    >>> api.parse('[a-z]+')
     abc
 
 Custom Interface
