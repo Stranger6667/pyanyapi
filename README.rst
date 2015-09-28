@@ -415,7 +415,7 @@ You can work with such data in following way:
     Text
 
 Now AJAXParser is bundled in pyanyapi, but it works different.
-But anyway this example can be helpful for building custom parsers
+But anyway this example can be helpful for building custom parsers.
 
 Python support
 --------------

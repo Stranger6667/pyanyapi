@@ -8,7 +8,7 @@ import yaml
 
 from ._compat import json, etree, objectify, XMLParser, HTMLParser
 from .exceptions import ResponseParseError
-
+from .helpers import memoize
 
 DICT_LOOKUP = ' > '
 
@@ -22,6 +22,7 @@ class BaseInterface(object):
 
     def __init__(self, content):
         self.content = content
+        self.parse = memoize(self.parse)
 
     @classmethod
     def init_attr(cls, settings):
@@ -41,6 +42,9 @@ class BaseInterface(object):
         return self._parsed_content
 
     def perform_parsing(self):
+        raise NotImplementedError
+
+    def parse(self, query):
         raise NotImplementedError
 
 

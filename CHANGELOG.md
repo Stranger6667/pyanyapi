@@ -6,6 +6,7 @@ History
 
 * Add YAMLParser (#5).
 * Add AJAXParser (#9).
+* `parse` calls memoization (#18).
 
 0.3 - 24.09.2015
 ----------------

@@ -17,6 +17,17 @@ class cached_property(object):
         return res
 
 
+def memoize(f):
+    memo = {}
+
+    def inner(key):
+        if key not in memo:
+            memo[key] = f(key)
+        return memo[key]
+
+    return inner
+
+
 def attach_attribute(target, name, attr):
     attr.__name__ = name
     setattr(target, name, attr)

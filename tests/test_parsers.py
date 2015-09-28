@@ -235,3 +235,12 @@ def test_ajax_parser_invalid_settings():
     }).parse(AJAX_CONTENT)
     assert parsed.valid == 'third_p'
     assert parsed.invalid == ''
+
+
+def test_parse_memoization():
+    api = JSONParser().parse(JSON_CONTENT)
+    with patch.object(api, 'get_from_dict', wraps=api.get_from_dict) as patched:
+        assert api.parse('container > test') == 'value'
+        assert patched.call_count == 1
+        assert api.parse('container > test') == 'value'
+        assert patched.call_count == 1
