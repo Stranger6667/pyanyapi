@@ -18,7 +18,7 @@ XML_CONTENT = '''<?xml version="1.0" encoding="UTF-8"?>
 JSON_CONTENT = '{"container":{"test":"value"},"another":"123"}'
 YAML_CONTENT = 'container:\n    test: "123"'
 AJAX_CONTENT = '{"content": "<p>Pcontent</p><span>SPANcontent</span>",' \
-               '"second_part":"<p>second_p</p>"}'
+               '"second_part":"<p>second_p</p>","third":{"inner":"<p>third_p</p>"}}'
 
 
 @lxml_is_supported
@@ -224,3 +224,13 @@ def test_ajax_parser_cache():
         assert parsed.second == 'second_p'
         assert patched.call_count == 1
         assert len(parsed._inner_cache) == 2
+
+
+@lxml_is_supported
+def test_ajax_parser_invalid_settings():
+    parsed = AJAXParser({
+        'valid': 'third > inner > string(//p)',
+        'invalid': 'third > string(//p)',
+    }).parse(AJAX_CONTENT)
+    assert parsed.valid == 'third_p'
+    assert parsed.invalid == ''

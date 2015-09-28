@@ -244,7 +244,10 @@ class AJAXInterface(JSONInterface):
     def get_from_dict(self, text, data):
         json_part, xpath_part = data.rsplit(DICT_LOOKUP, 1)
         inner_interface = self.get_inner_interface(text, json_part)
-        return inner_interface.parse(xpath_part)
+        try:
+            return inner_interface.parse(xpath_part)
+        except (etree.XMLSyntaxError, ValueError):
+            return inner_interface.empty_result
 
 
 class RegExpInterface(BaseInterface):

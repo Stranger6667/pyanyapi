@@ -5,6 +5,7 @@ History
 ----------------
 
 * Add YAMLParser (#5).
+* Add AJAXParser (#9).
 
 0.3 - 24.09.2015
 ----------------
