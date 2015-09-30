@@ -48,6 +48,16 @@ class BaseInterface(object):
     def parse(self, query):
         raise NotImplementedError
 
+    def parse_all(self):
+        """
+        Processes all available properties and returns results as dictionary.
+        """
+        return dict(
+            (key, getattr(self, key, self.empty_result))
+            for key, attr in self.__class__.__dict__.items()
+            if hasattr(attr, '_attached') and type(attr).__name__ == 'cached_property'
+        )
+
 
 # Uses as fallback. None - can be obtained from JSON's null, any string also can be, so unique object is a best choice
 EMPTY_RESULT = object()
@@ -81,6 +91,12 @@ class CombinedInterface(BaseInterface):
                 return result
             except (AttributeError, ResponseParseError):
                 pass
+
+    def parse_all(self):
+        result = super(CombinedInterface, self).parse_all()
+        for parser in self.parsers:
+            result.update(parser.parse_all(self.content))
+        return result
 
 
 class XPathInterface(BaseInterface):

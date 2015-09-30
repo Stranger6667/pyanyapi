@@ -30,6 +30,7 @@ def memoize(f):
 
 def attach_attribute(target, name, attr):
     attr.__name__ = name
+    attr._attached = True
     setattr(target, name, attr)
 
 

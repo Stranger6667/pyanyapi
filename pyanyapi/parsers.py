@@ -64,6 +64,9 @@ class BaseParser(object):
 
         return Interface(**init_kwargs)
 
+    def parse_all(self, content=''):
+        return self.parse(content).parse_all()
+
     def get_interface_kwargs(self):
         return {'content': self.content}
 
