@@ -63,6 +63,24 @@ Or it can be configured in runtime:
     >>> api.header
     Value
 
+To get all parsing results as a dict there is ``parse_all`` method.
+All properties (include defined with ``@interface_property`` decorator) will be returned.
+
+.. code:: python
+
+    from pyanyapi import JSONParser
+
+    >>> JSONParser({
+        'first': 'container > 0',
+        'second': 'container > 1',
+        'third': 'container > 2',
+    }).parse('{"container":["first", "second", "third"]}').parse_all()
+    {
+        'first': 'first',
+        'second': 'second',
+        'third': 'third',
+    }
+
 Complex setup
 ~~~~~~~~~~~~~
 
