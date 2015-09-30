@@ -241,6 +241,19 @@ And executes more queries after initial parsing:
     >>> api.parse('[a-z]+')
     abc
 
+Also, you can pass flags for regular expressions on parser initialization:
+
+.. code:: python
+
+    from pyanyapi import RegExpParser
+
+
+    >>> RegExpParser({'test': '\d+.\d+'}).parse('123\n234').test
+    123
+    >>> RegExpParser({'test': '\d+.\d+'}, flags=re.DOTALL).parse('123\n234').test
+    123
+    234
+
 AJAX Interface
 ~~~~~~~~~~~~~~
 

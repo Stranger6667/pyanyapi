@@ -1,4 +1,6 @@
 # coding: utf-8
+import re
+
 import pytest
 
 from ._compat import patch
@@ -19,6 +21,7 @@ JSON_CONTENT = '{"container":{"test":"value"},"another":"123"}'
 YAML_CONTENT = 'container:\n    test: "123"'
 AJAX_CONTENT = '{"content": "<p>Pcontent</p><span>SPANcontent</span>",' \
                '"second_part":"<p>second_p</p>","third":{"inner":"<p>third_p</p>"}}'
+MULTILINE_CONTENT = '123\n234'
 
 
 @lxml_is_supported
@@ -244,3 +247,8 @@ def test_parse_memoization():
         assert patched.call_count == 1
         assert api.parse('container > test') == 'value'
         assert patched.call_count == 1
+
+
+def test_regexp_settings():
+    assert RegExpParser({'test': '\d+.\d+'}).parse(MULTILINE_CONTENT).test == '123'
+    assert RegExpParser({'test': '\d+.\d+'}, flags=re.DOTALL).parse(MULTILINE_CONTENT).test == '123\n234'

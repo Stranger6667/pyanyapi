@@ -161,3 +161,12 @@ class AJAXParser(LXMLParser):
 
 class RegExpParser(BaseParser):
     interface_class = RegExpInterface
+
+    def __init__(self, settings=None, flags=0):
+        self.flags = flags
+        super(RegExpParser, self).__init__(settings)
+
+    def get_interface_kwargs(self):
+        kwargs = super(RegExpParser, self).get_interface_kwargs()
+        kwargs['flags'] = self.flags
+        return kwargs

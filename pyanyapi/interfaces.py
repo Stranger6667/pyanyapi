@@ -274,8 +274,12 @@ class RegExpInterface(BaseInterface):
     So, response will be like 'ok' or 'Error 100'.
     """
 
+    def __init__(self, content, flags=0):
+        self.flags = flags
+        super(RegExpInterface, self).__init__(content)
+
     def execute_method(self, settings):
-        matches = re.findall(settings, self.content)
+        matches = re.findall(settings, self.content, self.flags)
         if matches:
             return matches[0]
         return self.empty_result

@@ -1,6 +1,11 @@
 History
 -------
 
+0.5 - TBD
+----------------
+
+* Settings for regular expressions (#19).
+
 0.4 - 29.09.2015
 ----------------
 
