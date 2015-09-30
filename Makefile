@@ -27,7 +27,6 @@ clean-test:
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
-	rm -fr reports/
 
 test:
 	python setup.py test --pytest-args="--cov=pyanyapi --cov-report xml"
