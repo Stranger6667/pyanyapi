@@ -10,6 +10,7 @@ from ._compat import json, etree, objectify, XMLParser, HTMLParser
 from .exceptions import ResponseParseError
 from .helpers import memoize
 
+
 DICT_LOOKUP = ' > '
 
 
@@ -102,12 +103,13 @@ class XPathInterface(BaseInterface):
     """
     parser_class = HTMLParser
     empty_result = ''
+    _error_message = 'HTML data can not be parsed.'
 
     def perform_parsing(self):
         try:
             return etree.fromstring(self.content, self.parser_class())
         except etree.XMLSyntaxError:
-            raise ResponseParseError('XML data can not be parsed.')
+            raise ResponseParseError(self._error_message)
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
@@ -121,12 +123,13 @@ class XPathInterface(BaseInterface):
         else:
             return self.parsed_content.xpath(settings)
 
-    def parse(self, xpath):
-        return self.parsed_content.xpath(xpath)
+    def parse(self, query):
+        return self.parsed_content.xpath(query)
 
 
 class XMLInterface(XPathInterface):
     parser_class = XMLParser
+    _error_message = 'XML data can not be parsed.'
 
 
 class XMLObjectifyInterface(BaseInterface):
@@ -143,12 +146,13 @@ class XMLObjectifyInterface(BaseInterface):
 
     Also this interface does not require any settings.
     """
+    _error_message = 'XML data can not be parsed.'
 
     def perform_parsing(self):
         try:
             return objectify.fromstring(self.content)
         except etree.XMLSyntaxError:
-            raise ResponseParseError('XML data can not be parsed.')
+            raise ResponseParseError(self._error_message)
 
     def __getattribute__(self, item):
         try:
@@ -206,21 +210,23 @@ class DictInterface(BaseInterface):
 
 
 class JSONInterface(DictInterface):
+    _error_message = 'JSON data can not be parsed.'
 
     def perform_parsing(self):
         try:
             return json.loads(self.content)
         except (ValueError, TypeError):
-            raise ResponseParseError('JSON data can not be parsed.')
+            raise ResponseParseError(self._error_message)
 
 
 class YAMLInterface(DictInterface):
+    _error_message = 'YAML data can not be parsed.'
 
     def perform_parsing(self):
         try:
             return yaml.load(self.content)
         except yaml.error.YAMLError:
-            raise ResponseParseError('YAML data can not be parsed.')
+            raise ResponseParseError(self._error_message)
 
 
 class AJAXInterface(JSONInterface):
@@ -240,7 +246,7 @@ class AJAXInterface(JSONInterface):
         super(AJAXInterface, self).__init__(*args, **kwargs)
 
     def get_inner_interface(self, text, json_part):
-        if not json_part in self._inner_cache:
+        if json_part not in self._inner_cache:
             inner_content = super(AJAXInterface, self).get_from_dict(text, json_part)
             self._inner_cache[json_part] = self.inner_interface_class(inner_content)
         return self._inner_cache[json_part]
@@ -274,5 +280,5 @@ class RegExpInterface(BaseInterface):
             return matches[0]
         return self.empty_result
 
-    def parse(self, expression):
-        return self.execute_method(expression)
+    def parse(self, query):
+        return self.execute_method(query)
