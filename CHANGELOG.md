@@ -4,6 +4,7 @@ History
 0.5 - TBD
 ----------------
 
+* Add `parse_all` to parse all settings (#20).
 * Settings for regular expressions (#19).
 
 0.4 - 29.09.2015

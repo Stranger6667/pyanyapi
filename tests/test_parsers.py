@@ -4,7 +4,7 @@ import re
 import pytest
 
 from ._compat import patch
-from .conftest import ChildParser, lxml_is_supported, lxml_is_not_supported
+from .conftest import ChildParser, SimpleParser, lxml_is_supported, lxml_is_not_supported
 from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, YAMLParser, RegExpParser, AJAXParser
 from pyanyapi.exceptions import ResponseParseError
 
@@ -252,3 +252,18 @@ def test_parse_memoization():
 def test_regexp_settings():
     assert RegExpParser({'test': '\d+.\d+'}).parse(MULTILINE_CONTENT).test == '123'
     assert RegExpParser({'test': '\d+.\d+'}, flags=re.DOTALL).parse(MULTILINE_CONTENT).test == '123\n234'
+
+
+def test_parse_all():
+    expected = {'test': '123\n234', 'test2': '123', 'test3': None, 'test4': '123_4'}
+    parser = SimpleParser(flags=re.DOTALL)
+    assert parser.parse(MULTILINE_CONTENT).parse_all() == expected
+    assert parser.parse_all(MULTILINE_CONTENT) == expected
+
+
+def test_parse_all_combined_parser(dummy_parser):
+    assert dummy_parser.parse(JSON_CONTENT).parse_all() == {
+        'success': 'value',
+        'combined': '123-value',
+        'test': None
+    }

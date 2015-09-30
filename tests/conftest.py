@@ -39,23 +39,23 @@ def empty_values_parser():
     return EmptyValuesParser()
 
 
-class DummyParser(CombinedParser):
-    parsers = (
-        JSONParser({'success': 'container > test'}),
-        RegExpParser({'test': 'href=\'(.*)\''}),
-    )
-
-    @interface_property
-    def combined(self):
-        return '123-' + self.success
-
-    @interface_method
-    def method(self, value):
-        return self.success + value
-
-
 @pytest.fixture
 def dummy_parser():
+
+    class DummyParser(CombinedParser):
+        parsers = (
+            JSONParser({'success': 'container > test'}),
+            RegExpParser({'test': 'href=\'(.*)\''}),
+        )
+
+        @interface_property
+        def combined(self):
+            return '123-' + self.success
+
+        @interface_method
+        def method(self, value):
+            return self.success + value
+
     return DummyParser()
 
 
@@ -72,6 +72,23 @@ class ChildParser(ParentParser):
         'child1': 'test3',
         'child2': 'test4'
     }
+
+
+class SimpleParser(RegExpParser):
+    settings = {
+        'test': '\d+.\d+',
+        'test2': '\d+',
+        'test3': 'a',
+    }
+
+    @interface_property
+    def test4(self):
+        return self.test2 + '_4'
+
+    @interface_method
+    def test_5(self, value):
+        return 'Will not be included'
+
 
 PYPY3 = hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 3
 JYTHON = platform.system() == 'Java'
