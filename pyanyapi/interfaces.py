@@ -6,7 +6,7 @@ import re
 
 import yaml
 
-from ._compat import json, etree, objectify, XMLParser, HTMLParser
+from ._compat import json, etree, objectify, XMLParser, HTMLParser, string_types
 from .exceptions import ResponseParseError
 from .helpers import memoize
 
@@ -21,8 +21,9 @@ class BaseInterface(object):
     content = None
     empty_result = None
 
-    def __init__(self, content):
+    def __init__(self, content, strip=False):
         self.content = content
+        self.strip = strip
         self.parse = memoize(self.parse)
 
     @classmethod
@@ -206,6 +207,8 @@ class DictInterface(BaseInterface):
                         result = result[int(action)]
                     except (IndexError, TypeError, ValueError):
                         return self.empty_result
+        if self.strip and isinstance(result, string_types):
+            return result.strip()
         return result
 
     def execute_method(self, settings):
@@ -290,14 +293,17 @@ class RegExpInterface(BaseInterface):
     So, response will be like 'ok' or 'Error 100'.
     """
 
-    def __init__(self, content, flags=0):
+    def __init__(self, content, strip=False, flags=0):
         self.flags = flags
-        super(RegExpInterface, self).__init__(content)
+        super(RegExpInterface, self).__init__(content, strip)
 
     def execute_method(self, settings):
         matches = re.findall(settings, self.content, self.flags)
         if matches:
-            return matches[0]
+            value = matches[0]
+            if self.strip:
+                return value.strip()
+            return value
         return self.empty_result
 
     def parse(self, query):

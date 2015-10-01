@@ -16,3 +16,9 @@ try:
     import ujson as json
 except ImportError:
     import json
+
+
+try:
+    string_types = (str, unicode)
+except NameError:
+    string_types = (str, )
