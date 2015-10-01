@@ -138,15 +138,13 @@ class XPathInterface(BaseInterface):
             result = self.parse(settings['base'])
             child_query = settings.get('children')
             if child_query:
-                return [''.join(element.xpath(child_query)).strip() for element in result]
-            elif isinstance(result, list):
-                return result
-            return result.strip()
+                return [self.maybe_strip(''.join(element.xpath(child_query))) for element in result]
+            return result
 
         return self.parse(settings)
 
     def parse(self, query):
-        return self.parsed_content.xpath(query)
+        return self.maybe_strip(self.parsed_content.xpath(query))
 
 
 class XMLInterface(XPathInterface):
@@ -272,7 +270,7 @@ class AJAXInterface(JSONInterface):
     def get_inner_interface(self, text, json_part):
         if json_part not in self._inner_cache:
             inner_content = super(AJAXInterface, self).get_from_dict(text, json_part)
-            self._inner_cache[json_part] = self.inner_interface_class(inner_content)
+            self._inner_cache[json_part] = self.inner_interface_class(inner_content, self.strip)
         return self._inner_cache[json_part]
 
     def get_from_dict(self, target, query):

@@ -179,7 +179,7 @@ def test_complex_config():
     parsed = XMLParser({'test': {'base': '//test', 'children': 'text()|*//text()'}}).parse(
         '<xml><test>123 </test><test><inside> 234</inside></test></xml>'
     )
-    assert parsed.test == ['123', '234']
+    assert parsed.test == ['123 ', ' 234']
 
 
 def test_json_parse():
