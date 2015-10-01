@@ -129,15 +129,15 @@ class XPathInterface(BaseInterface):
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
-            result = self.parsed_content.xpath(settings['base'])
-            if settings.get('children'):
-                return [''.join(element.xpath(settings['children'])).strip() for element in result]
+            result = self.parse(settings['base'])
+            child_query = settings.get('children')
+            if child_query:
+                return [''.join(element.xpath(child_query)).strip() for element in result]
             elif isinstance(result, list):
                 return result
-            else:
-                return result.strip()
-        else:
-            return self.parsed_content.xpath(settings)
+            return result.strip()
+
+        return self.parse(settings)
 
     def parse(self, query):
         return self.parsed_content.xpath(query)
@@ -193,33 +193,35 @@ class DictInterface(BaseInterface):
     which will get "123" from {"container":{"id":"123"}}
     """
 
-    def get_from_dict(self, text, data):
-        action_list = data.split(DICT_LOOKUP)
-        result = text
+    def get_from_dict(self, target, query):
+        if not target:
+            return target
+        action_list = query.split(DICT_LOOKUP)
         for action in action_list:
-            action = action.strip()
-            if result:
-                if isinstance(result, dict):
-                    result = result.get(action, self.empty_result)
+            if target:
+                action = action.strip()
+                if isinstance(target, dict):
+                    target = target.get(action, self.empty_result)
                 else:
                     try:
-                        result = result[int(action)]
+                        target = target[int(action)]
                     except (IndexError, TypeError, ValueError):
                         return self.empty_result
-        return result
+            else:
+                return target
+        return target
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
-            result = self.get_from_dict(self.parsed_content, settings['base'])
-
-            if settings.get('children'):
-                children = settings.get('children')
+            result = self.parse(settings['base'])
+            child_query = settings.get('children')
+            if child_query:
                 return [
-                    self.get_from_dict(r, children) or self.empty_result for r in result
+                    self.get_from_dict(r, child_query) or self.empty_result for r in result
                 ] if result else self.empty_result
             return result
 
-        return self.get_from_dict(self.parsed_content, settings)
+        return self.parse(settings)
 
     def parse(self, query):
         return self.get_from_dict(self.parsed_content, query)
@@ -267,9 +269,9 @@ class AJAXInterface(JSONInterface):
             self._inner_cache[json_part] = self.inner_interface_class(inner_content)
         return self._inner_cache[json_part]
 
-    def get_from_dict(self, text, data):
-        json_part, xpath_part = data.rsplit(DICT_LOOKUP, 1)
-        inner_interface = self.get_inner_interface(text, json_part)
+    def get_from_dict(self, target, query):
+        json_part, xpath_part = query.rsplit(DICT_LOOKUP, 1)
+        inner_interface = self.get_inner_interface(target, json_part)
         try:
             return inner_interface.parse(xpath_part)
         except (etree.XMLSyntaxError, ValueError):
