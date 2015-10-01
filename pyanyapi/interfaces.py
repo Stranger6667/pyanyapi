@@ -59,6 +59,11 @@ class BaseInterface(object):
             if hasattr(attr, '_attached') and type(attr).__name__ == 'cached_property'
         )
 
+    def maybe_strip(self, value):
+        if self.strip and isinstance(value, string_types):
+            return value.strip()
+        return value
+
 
 # Uses as fallback. None - can be obtained from JSON's null, any string also can be, so unique object is a best choice
 EMPTY_RESULT = object()
@@ -207,9 +212,7 @@ class DictInterface(BaseInterface):
                         result = result[int(action)]
                     except (IndexError, TypeError, ValueError):
                         return self.empty_result
-        if self.strip and isinstance(result, string_types):
-            return result.strip()
-        return result
+        return self.maybe_strip(result)
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
@@ -300,10 +303,7 @@ class RegExpInterface(BaseInterface):
     def execute_method(self, settings):
         matches = re.findall(settings, self.content, self.flags)
         if matches:
-            value = matches[0]
-            if self.strip:
-                return value.strip()
-            return value
+            return self.maybe_strip(matches[0])
         return self.empty_result
 
     def parse(self, query):
