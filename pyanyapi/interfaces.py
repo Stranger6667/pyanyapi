@@ -6,7 +6,7 @@ import re
 
 import yaml
 
-from ._compat import json, etree, objectify, XMLParser, HTMLParser
+from ._compat import json, etree, objectify, XMLParser, HTMLParser, string_types
 from .exceptions import ResponseParseError
 from .helpers import memoize
 
@@ -21,8 +21,9 @@ class BaseInterface(object):
     content = None
     empty_result = None
 
-    def __init__(self, content):
+    def __init__(self, content, strip=False):
         self.content = content
+        self.strip = strip
         self.parse = memoize(self.parse)
 
     @classmethod
@@ -57,6 +58,11 @@ class BaseInterface(object):
             for key, attr in self.__class__.__dict__.items()
             if hasattr(attr, '_attached') and type(attr).__name__ == 'cached_property'
         )
+
+    def maybe_strip(self, value):
+        if self.strip and isinstance(value, string_types):
+            return value.strip()
+        return value
 
 
 # Uses as fallback. None - can be obtained from JSON's null, any string also can be, so unique object is a best choice
@@ -132,15 +138,13 @@ class XPathInterface(BaseInterface):
             result = self.parse(settings['base'])
             child_query = settings.get('children')
             if child_query:
-                return [''.join(element.xpath(child_query)).strip() for element in result]
-            elif isinstance(result, list):
-                return result
-            return result.strip()
+                return [self.maybe_strip(''.join(element.xpath(child_query))) for element in result]
+            return result
 
         return self.parse(settings)
 
     def parse(self, query):
-        return self.parsed_content.xpath(query)
+        return self.maybe_strip(self.parsed_content.xpath(query))
 
 
 class XMLInterface(XPathInterface):
@@ -209,7 +213,7 @@ class DictInterface(BaseInterface):
                         return self.empty_result
             else:
                 return target
-        return target
+        return self.maybe_strip(target)
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
@@ -266,7 +270,7 @@ class AJAXInterface(JSONInterface):
     def get_inner_interface(self, text, json_part):
         if json_part not in self._inner_cache:
             inner_content = super(AJAXInterface, self).get_from_dict(text, json_part)
-            self._inner_cache[json_part] = self.inner_interface_class(inner_content)
+            self._inner_cache[json_part] = self.inner_interface_class(inner_content, self.strip)
         return self._inner_cache[json_part]
 
     def get_from_dict(self, target, query):
@@ -292,14 +296,14 @@ class RegExpInterface(BaseInterface):
     So, response will be like 'ok' or 'Error 100'.
     """
 
-    def __init__(self, content, flags=0):
+    def __init__(self, content, strip=False, flags=0):
         self.flags = flags
-        super(RegExpInterface, self).__init__(content)
+        super(RegExpInterface, self).__init__(content, strip)
 
     def execute_method(self, settings):
         matches = re.findall(settings, self.content, self.flags)
         if matches:
-            return matches[0]
+            return self.maybe_strip(matches[0])
         return self.empty_result
 
     def parse(self, query):

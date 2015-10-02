@@ -23,7 +23,8 @@ class BaseParser(object):
     """
     interface_class = None
 
-    def __init__(self, settings=None):
+    def __init__(self, settings=None, strip=False):
+        self.strip = strip
         parents_settings = self.get_parents_settings()
         if settings:
             parents_settings.update(settings)
@@ -68,7 +69,7 @@ class BaseParser(object):
         return self.parse(content).parse_all()
 
     def get_interface_kwargs(self):
-        return {'content': self.content}
+        return {'content': self.content, 'strip': self.strip}
 
     def prepare_content(self, content):
         """
@@ -165,9 +166,9 @@ class AJAXParser(LXMLParser):
 class RegExpParser(BaseParser):
     interface_class = RegExpInterface
 
-    def __init__(self, settings=None, flags=0):
+    def __init__(self, settings=None, strip=False, flags=0):
         self.flags = flags
-        super(RegExpParser, self).__init__(settings)
+        super(RegExpParser, self).__init__(settings, strip)
 
     def get_interface_kwargs(self):
         kwargs = super(RegExpParser, self).get_interface_kwargs()
