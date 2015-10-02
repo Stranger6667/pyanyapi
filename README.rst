@@ -31,7 +31,7 @@ Usage
 -----
 
 Library provides an ability to create API over various content.
-Currently there are bundled tools to work with HTML, XML, JSON.
+Currently there are bundled tools to work with HTML, XML, JSON and YAML.
 Initially it was created to work with ``requests`` library.
 
 Basic setup
@@ -138,6 +138,22 @@ Settings attribute is merged from all ancestors of current parser.
 
     >>> SecondChildParser({'child': '//more'}).settings['child']
     //more
+
+Results stripping
+~~~~~~~~~~~~~~~~~
+
+Parsers can automagically strip trailing whitespaces with ``strip=True`` option.
+
+.. code:: python
+
+    from pyanyapi import RegExpParser
+
+
+    >>> settings = {'p': 'string(//p)'}
+    >>> XMLParser(settings).parse('<p> Pcontent </p>').p
+     Pcontent
+    >>> XMLParser(settings, strip=True).parse('<p> Pcontent </p>).p
+    Pcontent
 
 HTML & XML
 ~~~~~~~~~~
