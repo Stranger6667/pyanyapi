@@ -30,8 +30,8 @@ except NameError:
 
 try:
     from javax.xml.parsers import DocumentBuilderFactory
-    from java.io import ByteArrayInputStream
-    from javax.xml.xpath import XPathFactory
+    from java.io import ByteArrayInputStream  # pragma: no cover
+    from javax.xml.xpath import XPathFactory  # pragma: no cover
 except ImportError:
     DocumentBuilderFactory = None
     ByteArrayInputStream = None
