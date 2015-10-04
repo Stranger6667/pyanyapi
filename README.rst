@@ -31,7 +31,7 @@ Usage
 -----
 
 Library provides an ability to create API over various content.
-Currently there are bundled tools to work with HTML, XML, JSON and YAML.
+Currently there are bundled tools to work with HTML, XML, CSV, JSON and YAML.
 Initially it was created to work with ``requests`` library.
 
 Basic setup

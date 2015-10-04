@@ -1,7 +1,7 @@
 History
 -------
 
-0.5 - TBD
+0.5 - 05.10.2015
 ----------------
 
 * Add `parse_all` to parse all settings (#20).

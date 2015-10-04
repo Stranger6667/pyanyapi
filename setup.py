@@ -54,14 +54,14 @@ if not JYTHON:
 setup(
     name='pyanyapi',
     url='https://github.com/Stranger6667/pyanyapi',
-    version='0.4',
+    version='0.5',
     packages=['pyanyapi'],
     license='MIT',
     author='Dmitry Dygalo',
     author_email='dadygalo@gmail.com',
     maintainer='Dmitry Dygalo',
     maintainer_email='dadygalo@gmail.com',
-    keywords=['parsing', 'interface', 'xml', 'json', 'yaml', 'API', 'XPath', 'regexp'],
+    keywords=['parsing', 'interface', 'xml', 'json', 'csv', 'yaml', 'API', 'XPath', 'regexp'],
     description='Tools for convenient interface creation over various types of data in declarative way.',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
