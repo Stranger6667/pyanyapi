@@ -7,7 +7,17 @@ import re
 
 import yaml
 
-from ._compat import json, etree, objectify, XMLParser, HTMLParser, string_types
+from ._compat import (
+    json,
+    etree,
+    objectify,
+    XMLParser,
+    HTMLParser,
+    string_types,
+    XPathFactory,
+    ByteArrayInputStream,
+    DocumentBuilderFactory,
+)
 from .exceptions import ResponseParseError
 from .helpers import memoize
 
@@ -106,7 +116,11 @@ class CombinedInterface(BaseInterface):
         return result
 
 
-class XPathInterface(BaseInterface):
+class BaseXpathInterface(BaseInterface):
+    empty_result = ''
+
+
+class XPathInterface(BaseXpathInterface):
     """
     Uses as base class for HTML/XML-based content.
     Use XPath 1.0 syntax, which is compatible with LXML.
@@ -125,7 +139,6 @@ class XPathInterface(BaseInterface):
     before concatenation.
     """
     parser_class = HTMLParser
-    empty_result = ''
     _error_message = 'HTML data can not be parsed.'
 
     def perform_parsing(self):
@@ -146,6 +159,25 @@ class XPathInterface(BaseInterface):
 
     def parse(self, query):
         return self.maybe_strip(self.parsed_content.xpath(query))
+
+
+class JythonXMLInterface(BaseXpathInterface):
+    _error_message = 'XML data can not be parsed.'
+
+    def perform_parsing(self):
+        try:
+            return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ByteArrayInputStream(self.content))
+        except:
+            raise ResponseParseError(self._error_message)
+
+    def execute_method(self, settings):
+        if isinstance(settings, dict):
+            settings = settings['base']
+        return self.parse(settings)
+
+    def parse(self, query):
+        expression = XPathFactory.newXPath(XPathFactory.newInstance()).compile(query)
+        return self.maybe_strip(expression.evaluate(self.parsed_content))
 
 
 class XMLInterface(XPathInterface):

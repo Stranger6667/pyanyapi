@@ -1,5 +1,5 @@
 # coding: utf-8
-from .conftest import lxml_is_supported
+from .conftest import xpath_is_supported, not_jython
 from pyanyapi import RegExpParser, JSONParser, AJAXParser, XMLParser
 
 
@@ -20,14 +20,15 @@ def test_strip_json_parser():
     assert JSONParser(settings, strip=True).parse(JSON_CONTENT).all == '1'
 
 
-@lxml_is_supported
+@xpath_is_supported
+@not_jython
 def test_strip_ajax_parser():
     settings = {'all': 'content > string(//p)'}
     assert AJAXParser(settings).parse(AJAX_CONTENT).all == ' Pcontent '
     assert AJAXParser(settings, strip=True).parse(AJAX_CONTENT).all == 'Pcontent'
 
 
-@lxml_is_supported
+@xpath_is_supported
 def test_strip_xml_parser():
     settings = {'all': 'string(//p)'}
     assert XMLParser(settings).parse(XML_CONTENT).all == ' Pcontent '

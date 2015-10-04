@@ -4,12 +4,13 @@ import re
 import pytest
 
 from ._compat import patch
-from .conftest import ChildParser, SimpleParser, lxml_is_supported, lxml_is_not_supported
+from .conftest import ChildParser, SimpleParser, xpath_is_supported, xpath_is_not_supported, lxml_is_supported, JYTHON, \
+    not_jython
 from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, YAMLParser, RegExpParser, AJAXParser, CSVParser
 from pyanyapi.exceptions import ResponseParseError
 
 
-HTML_CONTENT = "<html><body><a href='#test'></body></html>"
+HTML_CONTENT = "<html><body><a href='#test'></a></body></html>"
 XML_CONTENT = '''<?xml version="1.0" encoding="UTF-8"?>
 <response>
 <id>32e9a4a2</id>
@@ -40,9 +41,9 @@ def test_xml_objectify_parser_error():
         parsed.test
 
 
-@lxml_is_supported
+@xpath_is_supported
 def test_xml_parser_error():
-    parsed = XMLParser({'test': None}).parse('<xml><test>123')
+    parsed = XMLParser({'test': '//test'}).parse('<xml><test>123')
     with pytest.raises(ResponseParseError):
         parsed.test
 
@@ -53,7 +54,7 @@ def test_yaml_parser_error():
         parsed.test
 
 
-@lxml_is_supported
+@xpath_is_supported
 @pytest.mark.parametrize(
     'settings', (
         {'success': {'base': '//test-mode/text()'}},
@@ -62,11 +63,11 @@ def test_yaml_parser_error():
 )
 def test_xml_parsed(settings):
     parsed = XMLParser(settings).parse(XML_CONTENT)
-    assert parsed.success == ['1']
+    assert parsed.success == (['1'] if not JYTHON else '1')
     assert parsed.parse('string(//id/text())') == '32e9a4a2'
 
 
-@lxml_is_supported
+@xpath_is_supported
 def test_xml_simple_settings():
     assert XMLParser({'id': {'base': 'string(//id/text())'}}).parse(XML_CONTENT).id == '32e9a4a2'
 
@@ -157,7 +158,7 @@ def test_efficient_parsing(empty_values_parser):
         assert not regexp_parser.called
 
 
-@lxml_is_supported
+@xpath_is_supported
 def test_simple_config_xml_parser():
     parsed = XMLParser({'test': 'string(//test/text())'}).parse('<xml><test>123</test></xml>')
     assert parsed.test == '123'
@@ -176,12 +177,12 @@ def test_settings_inheritance():
     assert parser.settings['parent1'] == 'test1'
 
 
-@lxml_is_supported
+@xpath_is_supported
 def test_complex_config():
     parsed = XMLParser({'test': {'base': '//test', 'children': 'text()|*//text()'}}).parse(
         '<xml><test>123 </test><test><inside> 234</inside></test></xml>'
     )
-    assert parsed.test == ['123 ', ' 234']
+    assert parsed.test == (['123 ', ' 234'] if not JYTHON else '123 ')
 
 
 def test_json_parse():
@@ -200,13 +201,14 @@ def test_yaml_parse():
     assert YAMLParser({'test': 'container > test'}).parse(YAML_CONTENT).test == '123'
 
 
-@lxml_is_not_supported
+@xpath_is_not_supported
 def test_lxml_not_supported():
     with pytest.raises(AssertionError):
         XMLParser({'test': '//p'}).parse('')
 
 
-@lxml_is_supported
+@xpath_is_supported
+@not_jython
 def test_ajax_parser():
     parsed = AJAXParser({'p': 'content > string(//p)', 'span': 'content > string(//span)'}).parse(AJAX_CONTENT)
     assert parsed.p == 'Pcontent'
@@ -214,7 +216,8 @@ def test_ajax_parser():
     assert parsed.parse('third > inner > string(//p)') == 'third_p'
 
 
-@lxml_is_supported
+@xpath_is_supported
+@not_jython
 def test_ajax_parser_cache():
     parsed = AJAXParser({
         'p': 'content > string(//p)',
@@ -232,7 +235,8 @@ def test_ajax_parser_cache():
         assert len(parsed._inner_cache) == 2
 
 
-@lxml_is_supported
+@xpath_is_supported
+@not_jython
 def test_ajax_parser_invalid_settings():
     parsed = AJAXParser({
         'valid': 'third > inner > string(//p)',
