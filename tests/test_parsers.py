@@ -5,7 +5,7 @@ import pytest
 
 from ._compat import patch
 from .conftest import ChildParser, SimpleParser, lxml_is_supported, lxml_is_not_supported
-from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, YAMLParser, RegExpParser, AJAXParser
+from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, YAMLParser, RegExpParser, AJAXParser, CSVParser
 from pyanyapi.exceptions import ResponseParseError
 
 
@@ -22,6 +22,8 @@ YAML_CONTENT = 'container:\n    test: "123"'
 AJAX_CONTENT = '{"content": "<p>Pcontent</p><span>SPANcontent</span>",' \
                '"second_part":"<p>second_p</p>","third":{"inner":"<p>third_p</p>"}}'
 MULTILINE_CONTENT = '123\n234'
+CSV_CONTENT = '1,2,3\r\n4,5,6\r\n'
+CSV_CONTENT_DIFFERENT_DELIMITER = '1;2;3\r\n4;5;6\r\n'
 
 
 @lxml_is_supported
@@ -267,3 +269,23 @@ def test_parse_all_combined_parser(dummy_parser):
         'combined': '123-value',
         'test': None
     }
+
+
+def test_parse_csv():
+    api = CSVParser({'second': '1:2'}).parse(CSV_CONTENT)
+    assert api.second == '6'
+    assert api.parse('0:1') == '2'
+    assert api.parse('0:6') is None
+
+
+def test_parse_csv_custom_delimiter():
+    api = CSVParser({'second': '1:2'}, delimiter=';').parse(CSV_CONTENT_DIFFERENT_DELIMITER)
+    assert api.second == '6'
+    assert api.parse('0:1') == '2'
+    assert api.parse('0:6') is None
+
+
+def test_csv_parser_error():
+    parsed = CSVParser({'test': '1:1'}).parse(123)
+    with pytest.raises(ResponseParseError):
+        parsed.test

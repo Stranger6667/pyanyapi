@@ -12,6 +12,7 @@ from .parsers import (
     YAMLParser,
     AJAXParser,
     RegExpParser,
+    CSVParser,
 )
 from .interfaces import (
     BaseInterface,
@@ -24,5 +25,6 @@ from .interfaces import (
     YAMLInterface,
     AJAXInterface,
     RegExpInterface,
+    CSVInterface,
 )
 from .decorators import interface_property, interface_method
