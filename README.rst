@@ -288,6 +288,30 @@ Also, you can pass flags for regular expressions on parser initialization:
     123
     234
 
+
+CSV Interface
+~~~~~~~~~~~~~
+
+Operates with CSV data with simple queries in format 'row_id:column_id'.
+
+.. code:: python
+
+    from pyanyapi import CSVParser
+
+
+    >>> CSVParser({'value': '1:2'}).parse('1,2,3\r\n4,5,6\r\n').value
+    6
+
+Also, you can pass custom kwargs for `csv.reader` on parser initialization:
+
+.. code:: python
+
+    from pyanyapi import CSVParser
+
+
+    >>> CSVParser({'value': '1:2'}, delimiter=';').parse('1;2;3\r\n4;5;6\r\n').value
+    6
+
 AJAX Interface
 ~~~~~~~~~~~~~~
 

@@ -7,6 +7,7 @@ History
 * Add `parse_all` to parse all settings (#20).
 * Settings for regular expressions (#19).
 * Add `strip` option to strip trailing whitespaces (#14).
+* Add CSVParser (#11).
 
 0.4 - 29.09.2015
 ----------------
