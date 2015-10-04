@@ -161,8 +161,7 @@ class XPathInterface(BaseXpathInterface):
         return self.maybe_strip(self.parsed_content.xpath(query))
 
 
-# pragma: no cover
-class JythonXMLInterface(BaseXpathInterface):
+class JythonXMLInterface(BaseXpathInterface):  # pragma: no cover
     _error_message = 'XML data can not be parsed.'
 
     def perform_parsing(self):

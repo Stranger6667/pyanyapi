@@ -28,10 +28,10 @@ except NameError:
     string_types = (str, )
 
 
-try:
+try:  # pragma: no cover
     from javax.xml.parsers import DocumentBuilderFactory
-    from java.io import ByteArrayInputStream  # pragma: no cover
-    from javax.xml.xpath import XPathFactory  # pragma: no cover
+    from java.io import ByteArrayInputStream
+    from javax.xml.xpath import XPathFactory
 except ImportError:
     DocumentBuilderFactory = None
     ByteArrayInputStream = None
