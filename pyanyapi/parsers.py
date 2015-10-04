@@ -12,7 +12,8 @@ from .interfaces import (
     YAMLInterface,
     AJAXInterface,
     RegExpInterface,
-    CombinedInterface
+    CSVInterface,
+    CombinedInterface,
 )
 from .helpers import attach_attribute, attach_cached_property
 
@@ -173,4 +174,17 @@ class RegExpParser(BaseParser):
     def get_interface_kwargs(self):
         kwargs = super(RegExpParser, self).get_interface_kwargs()
         kwargs['flags'] = self.flags
+        return kwargs
+
+
+class CSVParser(BaseParser):
+    interface_class = CSVInterface
+
+    def __init__(self, settings=None, strip=False, **reader_kwargs):
+        self.reader_kwargs = reader_kwargs
+        super(CSVParser, self).__init__(settings, strip)
+
+    def get_interface_kwargs(self):
+        kwargs = super(CSVParser, self).get_interface_kwargs()
+        kwargs.update(self.reader_kwargs)
         return kwargs

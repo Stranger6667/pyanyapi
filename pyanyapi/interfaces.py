@@ -2,6 +2,7 @@
 """
 Classes to be filled with interface declarations.
 """
+import csv
 import re
 
 import yaml
@@ -305,6 +306,39 @@ class RegExpInterface(BaseInterface):
         if matches:
             return self.maybe_strip(matches[0])
         return self.empty_result
+
+    def parse(self, query):
+        return self.execute_method(query)
+
+
+class CSVInterface(BaseInterface):
+    """
+    Operates with CSV data with simple queries in format 'row_id:column_id'.
+
+    {
+        "value": "1:2"
+    }
+
+    Will get 6 from "1,2,3\r\n4,5,6"
+    """
+    _error_message = 'CSV data can not be parsed.'
+
+    def __init__(self, content, strip=False, **reader_kwargs):
+        self.reader_kwargs = reader_kwargs
+        super(CSVInterface, self).__init__(content, strip)
+
+    def perform_parsing(self):
+        try:
+            return list(csv.reader(self.content.split(), **self.reader_kwargs))
+        except (TypeError, AttributeError):
+            raise ResponseParseError(self._error_message)
+
+    def execute_method(self, settings):
+        row, column = settings.split(':')
+        try:
+            return self.parsed_content[int(row)][int(column)]
+        except (IndexError, TypeError):
+            return self.empty_result
 
     def parse(self, query):
         return self.execute_method(query)
