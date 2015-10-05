@@ -164,9 +164,14 @@ class XPathInterface(BaseXpathInterface):
 class JythonXMLInterface(BaseXpathInterface):  # pragma: no cover
     _error_message = 'XML data can not be parsed.'
 
+    def __init__(self, *args, **kwargs):
+        super(JythonXMLInterface, self).__init__(*args, **kwargs)
+        self.xpath_factory = XPathFactory.newInstance()
+        self.document_builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+
     def perform_parsing(self):
         try:
-            return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ByteArrayInputStream(self.content))
+            return self.document_builder.parse(ByteArrayInputStream(self.content))
         except:
             raise ResponseParseError(self._error_message)
 
@@ -176,8 +181,7 @@ class JythonXMLInterface(BaseXpathInterface):  # pragma: no cover
         return self.parse(settings)
 
     def parse(self, query):
-        expression = XPathFactory.newXPath(XPathFactory.newInstance()).compile(query)
-        return self.maybe_strip(expression.evaluate(self.parsed_content))
+        return self.maybe_strip(XPathFactory.newXPath(self.xpath_factory).evaluate(query, self.parsed_content))
 
 
 class XMLInterface(XPathInterface):
