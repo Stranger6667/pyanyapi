@@ -111,7 +111,7 @@ class BaseParser(object):
 
 class CombinedParser(BaseParser):
     """
-    Combines multiple parsers in one. Its can be different types also.
+    Combines multiple parsers in one. This can also be in different types.
     """
     interface_class = CombinedInterface
 

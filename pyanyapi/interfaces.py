@@ -285,7 +285,7 @@ class AJAXInterface(JSONInterface):
 
 class RegExpInterface(BaseInterface):
     """
-    Parser based on regular expressions. It is most powerful parser, because of
+    Parser based on regular expressions. It is the most powerful parser, because of
     its simplicity.
     Settings example:
 

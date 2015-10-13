@@ -1,7 +1,7 @@
 # coding: utf-8
 """
 Functions to dynamically attach attributes to classes.
-Most of parsing result is cached because of immutability of input data.
+Most of parsing results are cached because of immutability of input data.
 """
 
 

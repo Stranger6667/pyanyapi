@@ -62,7 +62,7 @@ setup(
     maintainer='Dmitry Dygalo',
     maintainer_email='dadygalo@gmail.com',
     keywords=['parsing', 'interface', 'xml', 'json', 'csv', 'yaml', 'API', 'XPath', 'regexp'],
-    description='Tools for convenient interface creation over various types of data in declarative way.',
+    description='Tools for convenient interface creation over various types of data in a declarative way.',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

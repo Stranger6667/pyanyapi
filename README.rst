@@ -2,7 +2,7 @@ PyAnyAPI
 ========
 
 Tools for convenient interface creation over various types of data in
-declarative way.
+a declarative way.
 
 |Build Status| |codecov.io|
 
@@ -30,14 +30,14 @@ or from source:
 Usage
 -----
 
-Library provides an ability to create API over various content.
+The library provides an ability to create API over various content.
 Currently there are bundled tools to work with HTML, XML, CSV, JSON and YAML.
 Initially it was created to work with ``requests`` library.
 
 Basic setup
 ~~~~~~~~~~~
 
-Basic parsers can be declared in following way:
+Basic parsers can be declared in the following way:
 
 .. code:: python
 
@@ -160,7 +160,7 @@ HTML & XML
 
 For HTML and XML based interfaces XPath 1.0 syntax is used for settings
 declaration. Unfortunately XPath 2.0 is not supported by lxml. XML is
-about the same as HTMLParser, but uses different lxml parser internally.
+about the same as HTMLParser, but uses a different lxml parser internally.
 Here is an example of usage with ``requests``:
 
 .. code:: python
@@ -190,7 +190,7 @@ If you need, you can execute more XPath queries at any time you want:
 XML Objectify
 ~~~~~~~~~~~~~
 
-Lxml provide interesting feature - objectified interface for XML. It
+Lxml provides interesting feature - objectified interface for XML. It
 converts whole XML to Python object. This parser doesn't require any
 settings. E.g:
 
@@ -215,7 +215,7 @@ Settings syntax in based on PostgreSQL statements syntax.
     >>> JSONParser({'id': 'container > id'}).parse('{"container":{"id":"123"}}').id
     123
 
-Or you can access values in lists by index:
+Or you can get access to values in lists by index:
 
 .. code:: python
 
@@ -251,9 +251,9 @@ Equal to JSON parser, but works with YAML data.
 Regular Expressions Interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In case, when data has bad format or is just very complex to be parsed
-with bundled tools, you can use parser based on regular expressions.
-Settings is based on Python's regular expressions. It is most powerful
+In case, when data has wrong format or is just very complicated to be parsed
+with bundled tools, you can use a parser based on regular expressions.
+Settings are based on Python's regular expressions. It is the most powerful
 parser, because of its simplicity.
 
 .. code:: python
@@ -315,7 +315,7 @@ Also, you can pass custom kwargs for `csv.reader` on parser initialization:
 AJAX Interface
 ~~~~~~~~~~~~~~
 
-AJAX is very popular technology and often use JSON data with HTML values. Here is an example:
+AJAX is a very popular technology and often use JSON data with HTML values. Here is an example:
 
 .. code:: python
 
@@ -326,7 +326,7 @@ AJAX is very popular technology and often use JSON data with HTML values. Here i
     >>> api.p
     Pcontent
 
-It use combination of XPath queries and PostgreSQL-based JSON lookups.
+It uses combination of XPath queries and PostgreSQL-based JSON lookups.
 Custom queries execution is also available:
 
 .. code:: python
@@ -344,8 +344,8 @@ Custom Interface
 
 You can easily declare your own interface. For that you should define
 ``execute_method`` method. And optionally ``perform_parsing``. Here is
-an example of naive CSVInterface, which provide an ability to get column
-value by index. Also you should create separate parser for that.
+an example of naive CSVInterface, which provides an ability to get the column
+value by index. Also you should create a separate parser for that.
 
 .. code:: python
 
@@ -421,7 +421,7 @@ Custom property example:
     >>> api.test
     This is test
 
-Certainly previous example can be done with more complex XPath
+Certainly the previous example can be done with more complex XPath
 expression, but in general case XPath is not enough.
 
 Complex content parsing
@@ -463,7 +463,7 @@ Often with AJAX requests.
 
     {"content": "<span>Text</span>"}
 
-You can work with such data in following way:
+You can work with such data in the following way:
 
 .. code:: python
 
@@ -485,8 +485,8 @@ You can work with such data in following way:
     >>> api.text
     Text
 
-Now AJAXParser is bundled in pyanyapi, but it works different.
-But anyway this example can be helpful for building custom parsers.
+Now AJAXParser is bundled in pyanyapi, but it works differently.
+But anyway, this example can be helpful for building custom parsers.
 
 Python support
 --------------
