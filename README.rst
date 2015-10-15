@@ -146,7 +146,7 @@ Parsers can automagically strip trailing whitespaces with ``strip=True`` option.
 
 .. code:: python
 
-    from pyanyapi import RegExpParser
+    from pyanyapi import XMLParser
 
 
     >>> settings = {'p': 'string(//p)'}
