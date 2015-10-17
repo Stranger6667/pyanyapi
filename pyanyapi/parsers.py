@@ -3,10 +3,11 @@
 Classes for fabrics of interfaces.
 Generates interfaces dynamically from given settings.
 """
-from ._compat import etree
+from ._compat import etree, JYTHON
 from .interfaces import (
     XPathInterface,
     XMLInterface,
+    JythonXMLInterface,
     XMLObjectifyInterface,
     JSONInterface,
     YAMLInterface,
@@ -141,8 +142,12 @@ class HTMLParser(LXMLParser):
     interface_class = XPathInterface
 
 
-class XMLParser(LXMLParser):
-    interface_class = XMLInterface
+class XMLParser(BaseParser):
+    interface_class = XMLInterface if not JYTHON else JythonXMLInterface
+
+    def parse(self, *args, **kwargs):
+        assert etree or JYTHON, 'Using %s, but XPath is not supported' % self.__class__.__name__
+        return super(XMLParser, self).parse(*args, **kwargs)
 
     def prepare_content(self, content):
         return content.replace('encoding="UTF-8"', '').replace('encoding="utf-8"', '')
