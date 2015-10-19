@@ -1,11 +1,11 @@
 # coding: utf-8
 from .conftest import lxml_is_supported
-from pyanyapi import RegExpParser, JSONParser, AJAXParser, XMLParser
-
+from pyanyapi import RegExpParser, JSONParser, AJAXParser, XMLParser, XMLObjectifyParser
 
 JSON_CONTENT = '{"container":" 1 "}'
 AJAX_CONTENT = '{"content": "<p> Pcontent </p>"}'
 XML_CONTENT = '<p> Pcontent </p>'
+OBJECTIFY_CONTENT = '<xml><test> abc </test></xml>'
 
 
 def test_strip_regexp_parser():
@@ -42,3 +42,9 @@ class CustomParser(RegExpParser):
 def test_class_override():
     assert CustomParser().parse(' 1 ').all == '1'
     assert CustomParser(strip=False).parse(' 1 ').all == ' 1 '
+
+
+@lxml_is_supported
+def test_objectify_strip():
+    assert XMLObjectifyParser().parse(OBJECTIFY_CONTENT).test == ' abc '
+    assert XMLObjectifyParser(strip=True).parse(OBJECTIFY_CONTENT).test == 'abc'

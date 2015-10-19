@@ -29,7 +29,7 @@ CSV_CONTENT_DIFFERENT_DELIMITER = '1;2;3\r\n4;5;6\r\n'
 @lxml_is_supported
 def test_xml_objectify_parser():
     parsed = XMLObjectifyParser().parse('<xml><test>123</test></xml>')
-    assert parsed.test == 123
+    assert parsed.test == '123'
     assert parsed.not_existing is None
 
 

@@ -182,7 +182,7 @@ class XMLObjectifyInterface(BaseInterface):
             if item == '_parsed_content':
                 raise
             try:
-                return self.parsed_content.__getattribute__(item)
+                return self.maybe_strip(self.parsed_content.__getattribute__(item).text)
             except AttributeError:
                 return None
 

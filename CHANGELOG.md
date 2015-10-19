@@ -5,6 +5,7 @@ History
 ----------------
 
 * Ability to override `strip` attribute at class level (#27).
+* Fix `strip` in XMLObjectifyParser (#28).
 
 0.5 - 05.10.2015
 ----------------
