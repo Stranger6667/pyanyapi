@@ -32,3 +32,13 @@ def test_strip_xml_parser():
     settings = {'all': 'string(//p)'}
     assert XMLParser(settings).parse(XML_CONTENT).all == ' Pcontent '
     assert XMLParser(settings, strip=True).parse(XML_CONTENT).all == 'Pcontent'
+
+
+class CustomParser(RegExpParser):
+    settings = {'all': '.+'}
+    strip = True
+
+
+def test_class_override():
+    assert CustomParser().parse(' 1 ').all == '1'
+    assert CustomParser(strip=False).parse(' 1 ').all == ' 1 '

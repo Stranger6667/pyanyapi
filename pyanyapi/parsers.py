@@ -23,9 +23,11 @@ class BaseParser(object):
     Fabric for some API-like components, which supposes to provide interface to different types of content.
     """
     interface_class = None
+    strip = False
 
-    def __init__(self, settings=None, strip=False):
-        self.strip = strip
+    def __init__(self, settings=None, strip=None):
+        if strip is not None:
+            self.strip = strip
         parents_settings = self.get_parents_settings()
         if settings:
             parents_settings.update(settings)
@@ -167,7 +169,7 @@ class AJAXParser(LXMLParser):
 class RegExpParser(BaseParser):
     interface_class = RegExpInterface
 
-    def __init__(self, settings=None, strip=False, flags=0):
+    def __init__(self, settings=None, strip=None, flags=0):
         self.flags = flags
         super(RegExpParser, self).__init__(settings, strip)
 
@@ -180,7 +182,7 @@ class RegExpParser(BaseParser):
 class CSVParser(BaseParser):
     interface_class = CSVInterface
 
-    def __init__(self, settings=None, strip=False, **reader_kwargs):
+    def __init__(self, settings=None, strip=None, **reader_kwargs):
         self.reader_kwargs = reader_kwargs
         super(CSVParser, self).__init__(settings, strip)
 

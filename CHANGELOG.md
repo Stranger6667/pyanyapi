@@ -1,6 +1,11 @@
 History
 -------
 
+0.5.1 - 20.10.2015
+----------------
+
+* Ability to override `strip` attribute at class level (#27).
+
 0.5 - 05.10.2015
 ----------------
 
