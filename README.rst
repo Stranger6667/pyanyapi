@@ -94,7 +94,7 @@ list. Here comes "base-children" setup style.
 
     class SimpleParser(HTMLParser):
         settings = {
-            'header': {
+            'test': {
                 'base': '//test', 
                 'children': 'text()|*//text()'
             }
@@ -103,7 +103,7 @@ list. Here comes "base-children" setup style.
 
     >>> api = SimpleParser().parse('<xml><test>123 </test><test><inside> 234</inside></test></xml>')
     >>> api.test
-    ['123', '234']
+    ['123 ', ' 234']
 
 Settings inheritance
 ~~~~~~~~~~~~~~~~~~~~
@@ -152,7 +152,7 @@ Parsers can automagically strip trailing whitespaces with ``strip=True`` option.
     >>> settings = {'p': 'string(//p)'}
     >>> XMLParser(settings).parse('<p> Pcontent </p>').p
      Pcontent
-    >>> XMLParser(settings, strip=True).parse('<p> Pcontent </p>).p
+    >>> XMLParser(settings, strip=True).parse('<p> Pcontent </p>').p
     Pcontent
 
 HTML & XML
@@ -167,7 +167,7 @@ Here is an example of usage with ``requests``:
 
     >>> import requests
     >>> import pyanyapi
-    >>> parser = pyanyapi.HTMLParser({'header': 'string(.//h1/text())'}) 
+    >>> parser = pyanyapi.HTMLParser({'header': 'string(.//h1/text())'})
     >>> response = requests.get('http://example.com')
     >>> api = parser.parse(response.text)
     >>> api.header
@@ -448,7 +448,7 @@ Then:
         ]
 
     >>> parser = Parser()
-    >>> parser.parse('{"test": "Text"}').content
+    >>> parser.parse('{"test": "Text"}').test
     Text
     >>> parser.parse('<body><span>123</span></body>').error
     123
