@@ -1,6 +1,11 @@
 History
 -------
 
+0.5.2 - 20.10.2015
+----------------
+
+* Fix incorrect stripping in XMLObjectifyParser (#29).
+
 0.5.1 - 20.10.2015
 ----------------
 

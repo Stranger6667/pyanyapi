@@ -182,9 +182,24 @@ class XMLObjectifyInterface(BaseInterface):
             if item == '_parsed_content':
                 raise
             try:
-                return self.maybe_strip(self.parsed_content.__getattribute__(item).text)
+                return self.maybe_strip(self.parsed_content.__getattribute__(item))
             except AttributeError:
                 return None
+
+    def _strip_object(self, obj):
+        for key, value in obj.__dict__.items():
+            if isinstance(value, objectify.StringElement):
+                if value.text is not None:
+                    setattr(obj, key, value.text.strip())
+            elif isinstance(value, objectify.ObjectifiedElement):
+                self._strip_object(value)
+
+    def maybe_strip(self, value):
+        if self.strip and isinstance(value, objectify.ObjectifiedElement):
+            self._strip_object(value)
+        if self.strip and isinstance(value, objectify.StringElement) and value.text is not None:
+            return value.text.strip()
+        return value
 
 
 class DictInterface(BaseInterface):

@@ -5,7 +5,11 @@ from pyanyapi import RegExpParser, JSONParser, AJAXParser, XMLParser, XMLObjecti
 JSON_CONTENT = '{"container":" 1 "}'
 AJAX_CONTENT = '{"content": "<p> Pcontent </p>"}'
 XML_CONTENT = '<p> Pcontent </p>'
-OBJECTIFY_CONTENT = '<xml><test> abc </test></xml>'
+OBJECTIFY_CONTENT = '''<xml>
+<Messages><Message> abc </Message></Messages>
+<test> bcd </test>
+<first><second><third> inside </third></second></first>
+</xml>'''
 
 
 def test_strip_regexp_parser():
@@ -45,6 +49,16 @@ def test_class_override():
 
 
 @lxml_is_supported
+def test_objectify_strip_default():
+    default = XMLObjectifyParser().parse(OBJECTIFY_CONTENT)
+    assert default.Messages.Message == ' abc '
+    assert default.test == ' bcd '
+    assert default.first.second.third == ' inside '
+
+
+@lxml_is_supported
 def test_objectify_strip():
-    assert XMLObjectifyParser().parse(OBJECTIFY_CONTENT).test == ' abc '
-    assert XMLObjectifyParser(strip=True).parse(OBJECTIFY_CONTENT).test == 'abc'
+    with_strip = XMLObjectifyParser(strip=True).parse(OBJECTIFY_CONTENT)
+    assert with_strip.Messages.Message == 'abc'
+    assert with_strip.test == 'bcd'
+    assert with_strip.first.second.third == 'inside'
