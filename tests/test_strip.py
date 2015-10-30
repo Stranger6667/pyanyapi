@@ -1,6 +1,7 @@
 # coding: utf-8
-from .conftest import lxml_is_supported
+from .conftest import lxml_is_supported, not_pypy
 from pyanyapi import RegExpParser, JSONParser, AJAXParser, XMLParser, XMLObjectifyParser
+
 
 JSON_CONTENT = '{"container":" 1 "}'
 AJAX_CONTENT = '{"content": "<p> Pcontent </p>"}'
@@ -57,6 +58,7 @@ def test_objectify_strip_default():
 
 
 @lxml_is_supported
+@not_pypy
 def test_objectify_strip():
     with_strip = XMLObjectifyParser(strip=True).parse(OBJECTIFY_CONTENT)
     assert with_strip.Messages.Message == 'abc'

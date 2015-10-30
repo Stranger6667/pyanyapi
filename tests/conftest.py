@@ -90,8 +90,10 @@ class SimpleParser(RegExpParser):
         return 'Will not be included'
 
 
+PYPY = hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 2
 PYPY3 = hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 3
 JYTHON = platform.system() == 'Java'
 
 lxml_is_supported = pytest.mark.skipif(PYPY3 or JYTHON, reason='lxml is not supported')
 lxml_is_not_supported = pytest.mark.skipif(not (PYPY3 or JYTHON), reason='Only on if lxml is supported')
+not_pypy = pytest.mark.skipif(PYPY, reason='PyPy is not supported')
