@@ -1,6 +1,11 @@
 History
 -------
 
+0.5.3 - 30.10.2015
+----------------
+
+* Disable stripping in XMLObjectifyParser on PyPy (#30).
+
 0.5.2 - 20.10.2015
 ----------------
 

@@ -4,6 +4,7 @@ Classes to be filled with interface declarations.
 """
 import csv
 import re
+import sys
 
 import yaml
 
@@ -169,6 +170,11 @@ class XMLObjectifyInterface(BaseInterface):
     """
     _error_message = 'XML data can not be parsed.'
 
+    def __init__(self, content, strip=False):
+        assert not (strip and hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 2), \
+            'Stripping is not supported on PyPy'
+        super(XMLObjectifyInterface, self).__init__(content, strip)
+
     def perform_parsing(self):
         try:
             return objectify.fromstring(self.content)
@@ -186,19 +192,13 @@ class XMLObjectifyInterface(BaseInterface):
             except AttributeError:
                 return None
 
-    def _strip_object(self, obj):
-        for key, value in obj.__dict__.items():
-            if isinstance(value, objectify.StringElement):
-                if value.text is not None:
-                    setattr(obj, key, value.text.strip())
-            elif isinstance(value, objectify.ObjectifiedElement):
-                self._strip_object(value)
-
     def maybe_strip(self, value):
         if self.strip and isinstance(value, objectify.ObjectifiedElement):
-            self._strip_object(value)
-        if self.strip and isinstance(value, objectify.StringElement) and value.text is not None:
-            return value.text.strip()
+            if isinstance(value, objectify.StringElement) and value.text is not None:
+                value = value.text.strip()
+            else:
+                for key, inner_value in value.__dict__.items():
+                    value[key] = self.maybe_strip(inner_value)
         return value
 
 
