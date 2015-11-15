@@ -5,6 +5,7 @@ History
 ----------------
 
 * Fixed `lxml` installation on PyPy (#34).
+* Add support for subparsers (#32).
 
 0.5.3 - 30.10.2015
 ----------------

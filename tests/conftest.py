@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from pyanyapi import JSONParser, RegExpParser, CombinedParser, interface_property, interface_method
+from pyanyapi import JSONParser, RegExpParser, CombinedParser, interface_property, interface_method, HTMLParser
 
 
 class EmptyValuesParser(CombinedParser):
@@ -71,6 +71,13 @@ class ChildParser(ParentParser):
         'parent2': 'child_override',
         'child1': 'test3',
         'child2': 'test4'
+    }
+
+
+class SubParser(HTMLParser):
+    settings = {
+        'href': 'string(//@href)',
+        'text': 'string(//text())'
     }
 
 
