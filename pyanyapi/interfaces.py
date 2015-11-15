@@ -141,6 +141,12 @@ class XPathInterface(BaseInterface):
             child_query = settings.get('children')
             if child_query:
                 return [self.maybe_strip(''.join(element.xpath(child_query))) for element in result]
+            sub_parser = settings.get('parser')
+            if sub_parser:
+                return [
+                    (sub_parser() if callable(sub_parser) else sub_parser).parse(etree.tostring(element))
+                    for element in result
+                ]
             return result
 
         return self.parse(settings)

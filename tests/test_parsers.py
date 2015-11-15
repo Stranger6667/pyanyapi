@@ -4,12 +4,21 @@ import re
 import pytest
 
 from ._compat import patch
-from .conftest import ChildParser, SimpleParser, lxml_is_supported, lxml_is_not_supported
-from pyanyapi import XMLObjectifyParser, XMLParser, JSONParser, YAMLParser, RegExpParser, AJAXParser, CSVParser
+from .conftest import ChildParser, SubParser, SimpleParser, lxml_is_supported, lxml_is_not_supported
+from pyanyapi import (
+    XMLObjectifyParser,
+    XMLParser,
+    JSONParser,
+    YAMLParser,
+    RegExpParser,
+    AJAXParser,
+    CSVParser,
+    HTMLParser,
+)
 from pyanyapi.exceptions import ResponseParseError
 
 
-HTML_CONTENT = "<html><body><a href='#test'></body></html>"
+HTML_CONTENT = "<html><body><a href='#test'>test</body></html>"
 XML_CONTENT = '''<?xml version="1.0" encoding="UTF-8"?>
 <response>
 <id>32e9a4a2</id>
@@ -289,3 +298,21 @@ def test_csv_parser_error():
     parsed = CSVParser({'test': '1:1'}).parse(123)
     with pytest.raises(ResponseParseError):
         parsed.test
+
+
+@lxml_is_supported
+@pytest.mark.parametrize('sub_parser', (SubParser, SubParser()))
+def test_children(sub_parser):
+
+    class Parser(HTMLParser):
+        settings = {
+            'elem': {
+                'base': './/a',
+                'parser': sub_parser
+            }
+        }
+
+    api = Parser().parse(HTML_CONTENT)
+    sub_api = api.elem[0]
+    assert sub_api.href == '#test'
+    assert sub_api.text == 'test'

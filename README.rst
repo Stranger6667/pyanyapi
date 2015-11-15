@@ -105,6 +105,36 @@ list. Here comes "base-children" setup style.
     >>> api.test
     ['123 ', ' 234']
 
+There is another option to interact with sub-elements. Sub parsers!
+
+.. code:: python
+
+    from pyanyapi import HTMLParser
+
+
+    class SubParser(HTMLParser):
+        settings = {
+            'href': 'string(//@href)',
+            'text': 'string(//text())'
+        }
+
+
+    class Parser(HTMLParser):
+        settings = {
+            'elem': {
+                'base': './/a',
+                'parser': SubParser
+            }
+        }
+
+    >>> api = Parser().parse('<html><body><a href='#test'>test</body></html>')
+    >>> api.elem[0].href
+    #test
+    >>> api.elem[0].text
+    test
+
+Also you can pass sub parsers as classes or like instances.
+
 Settings inheritance
 ~~~~~~~~~~~~~~~~~~~~
 
