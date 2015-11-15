@@ -524,7 +524,7 @@ Python support
 PyAnyAPI supports Python 2.6, 2.7, 3.2, 3.3, 3.4, 3.5, PyPy and partially PyPy3 and Jython.
 Unfortunately ``lxml`` doesn't support PyPy3 and Jython, so HTML & XML parsing is not supported on PyPy3 and Jython.
 
-.. image:: https://travis-ci.org/Stranger6667/pyanyapi.svg?branch=master
+.. |Build Status| image:: https://travis-ci.org/Stranger6667/pyanyapi.svg?branch=master
    :target: https://travis-ci.org/Stranger6667/pyanyapi
 .. |codecov.io| image:: http://codecov.io/github/Stranger6667/pyanyapi/coverage.svg?branch=master
    :target: http://codecov.io/github/Stranger6667/pyanyapi?branch=master
