@@ -47,14 +47,17 @@ if not JYTHON:
     if not PYPY:
         requirements.append('ujson')
     if not PYPY3:
-        requirements.append('lxml')
+        if PYPY:
+            requirements.append('lxml<3.5')
+        else:
+            requirements.append('lxml')
     test_requirements.append('pytest-cov==1.8')
 
 
 setup(
     name='pyanyapi',
     url='https://github.com/Stranger6667/pyanyapi',
-    version='0.5.3',
+    version='0.5.4',
     packages=['pyanyapi'],
     license='MIT',
     author='Dmitry Dygalo',
