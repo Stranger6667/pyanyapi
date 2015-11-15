@@ -127,7 +127,7 @@ There is another option to interact with sub-elements. Sub parsers!
             }
         }
 
-    >>> api = Parser().parse('<html><body><a href='#test'>test</body></html>')
+    >>> api = Parser().parse("<html><body><a href='#test'>test</body></html>")
     >>> api.elem[0].href
     #test
     >>> api.elem[0].text
