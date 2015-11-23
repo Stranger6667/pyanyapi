@@ -1,6 +1,11 @@
 History
 -------
 
+0.5.5 - 23.11.2015
+----------------
+
+* Add content to exceptions in case of parsing errors (#35).
+
 0.5.4 - 15.11.2015
 ----------------
 

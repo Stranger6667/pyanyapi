@@ -133,7 +133,7 @@ class XPathInterface(BaseInterface):
         try:
             return etree.fromstring(self.content, self.parser_class())
         except etree.XMLSyntaxError:
-            raise ResponseParseError(self._error_message)
+            raise ResponseParseError(self._error_message, self.content)
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
@@ -185,7 +185,7 @@ class XMLObjectifyInterface(BaseInterface):
         try:
             return objectify.fromstring(self.content)
         except etree.XMLSyntaxError:
-            raise ResponseParseError(self._error_message)
+            raise ResponseParseError(self._error_message, self.content)
 
     def __getattribute__(self, item):
         try:
@@ -260,7 +260,7 @@ class JSONInterface(DictInterface):
         try:
             return json.loads(self.content)
         except (ValueError, TypeError):
-            raise ResponseParseError(self._error_message)
+            raise ResponseParseError(self._error_message, self.content)
 
 
 class YAMLInterface(DictInterface):
@@ -270,7 +270,7 @@ class YAMLInterface(DictInterface):
         try:
             return yaml.load(self.content)
         except yaml.error.YAMLError:
-            raise ResponseParseError(self._error_message)
+            raise ResponseParseError(self._error_message, self.content)
 
 
 class AJAXInterface(JSONInterface):
@@ -352,7 +352,7 @@ class CSVInterface(BaseInterface):
         try:
             return list(csv.reader(self.content.split(), **self.reader_kwargs))
         except (TypeError, AttributeError):
-            raise ResponseParseError(self._error_message)
+            raise ResponseParseError(self._error_message, self.content)
 
     def execute_method(self, settings):
         row, column = settings.split(':')
