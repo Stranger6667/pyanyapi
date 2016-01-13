@@ -1,16 +1,16 @@
 language: python
 python:
-  - "3.5"
+  - 3.5
 env:
   - TOX_ENV=py26
   - TOX_ENV=py27
   - TOX_ENV=py32
   - TOX_ENV=py33
   - TOX_ENV=py34
+  - TOX_ENV=py35
   - TOX_ENV=pypy
   - TOX_ENV=pypy3
   - JYTHON=true
-  - PYTHON35=true
 install:
   - if [ -z "$JYTHON" ]; then pip install codecov; fi
   - if [ "$TOX_ENV" ]; then pip install tox; fi
@@ -20,7 +20,6 @@ before_install:
 
 script:
   - if [ "$JYTHON" ]; then jython setup.py test; fi
-  - if [ "$PYTHON35" ]; then make test; fi
   - if [ "$TOX_ENV" ]; then tox -e $TOX_ENV; fi
 after_success:
   - codecov
