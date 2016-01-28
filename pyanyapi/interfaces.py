@@ -16,6 +16,12 @@ from .helpers import memoize
 DICT_LOOKUP = ' > '
 
 
+def expand_results(value):
+    if isinstance(value, list):
+        return [item.parse_all() for item in value]
+    return value
+
+
 class BaseInterface(object):
     """
     Basic dynamically generated interface.
@@ -56,7 +62,7 @@ class BaseInterface(object):
         Processes all available properties and returns results as dictionary.
         """
         return dict(
-            (key, getattr(self, key, self.empty_result))
+            (key, expand_results(getattr(self, key, self.empty_result)))
             for key, attr in self.__class__.__dict__.items()
             if hasattr(attr, '_attached') and type(attr).__name__ == 'cached_property'
         )

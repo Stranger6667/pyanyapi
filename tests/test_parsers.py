@@ -316,3 +316,4 @@ def test_children(sub_parser):
     sub_api = api.elem[0]
     assert sub_api.href == '#test'
     assert sub_api.text == 'test'
+    assert api.parse_all() == {'elem': [{'href': '#test', 'text': 'test'}]}

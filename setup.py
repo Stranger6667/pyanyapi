@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-import os
 import platform
 import sys
 
@@ -28,14 +27,12 @@ class PyTest(TestCommand):
     def run_tests(self):
         import pytest
 
-        sys.path.insert(0, os.path.dirname(__file__))
-
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
 
-requirements = ['PyYAML==3.11']
-test_requirements = ['pytest==2.8.0']
+requirements = ['PyYAML>=3.11']
+test_requirements = ['pytest>=2.8.0']
 
 
 if sys.version_info < (3, 3):
@@ -51,13 +48,13 @@ if not JYTHON:
             requirements.append('lxml<3.5')
         else:
             requirements.append('lxml')
-    test_requirements.append('pytest-cov==1.8')
+    test_requirements.append('pytest-cov>=1.8')
 
 
 setup(
     name='pyanyapi',
     url='https://github.com/Stranger6667/pyanyapi',
-    version='0.5.6',
+    version='0.5.7',
     packages=['pyanyapi'],
     license='MIT',
     author='Dmitry Dygalo',
