@@ -147,7 +147,11 @@ class XMLParser(LXMLParser):
     interface_class = XMLInterface
 
     def prepare_content(self, content):
-        return content.replace('encoding="UTF-8"', '').replace('encoding="utf-8"', '')
+        if isinstance(content, bytes):
+            declaration, replacement = b'encoding="UTF-8"', b''
+        else:
+            declaration, replacement = 'encoding="UTF-8"', ''
+        return content.replace(declaration, replacement).replace(declaration.lower(), replacement)
 
 
 class XMLObjectifyParser(XMLParser):

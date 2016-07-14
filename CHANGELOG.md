@@ -1,6 +1,11 @@
 History
 -------
 
+0.5.8 - 14.07.2016
+----------------
+
+* Fixed XML content parsing for bytes input.
+
 0.5.7 - 28.01.2016
 ----------------
 
