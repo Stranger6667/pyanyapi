@@ -2,48 +2,48 @@ History
 -------
 
 0.6.0 - 09.08.2016
-----------------
+------------------
 
 * IndexOf parser.
 
 0.5.8 - 14.07.2016
-----------------
+------------------
 
 * Fixed XML content parsing for bytes input.
 
 0.5.7 - 28.01.2016
-----------------
+------------------
 
 * Added `parse_all` call on subparsers (#37).
 
 0.5.6 - 24.11.2015
-----------------
+------------------
 
 * Fixed `super` call in exception.
 
 0.5.5 - 23.11.2015
-----------------
+------------------
 
 * Add content to exceptions in case of parsing errors (#35).
 
 0.5.4 - 15.11.2015
-----------------
+------------------
 
 * Fixed `lxml` installation on PyPy (#34).
 * Add support for subparsers (#32).
 
 0.5.3 - 30.10.2015
-----------------
+------------------
 
 * Disable stripping in XMLObjectifyParser on PyPy (#30).
 
 0.5.2 - 20.10.2015
-----------------
+------------------
 
 * Fix incorrect stripping in XMLObjectifyParser (#29).
 
 0.5.1 - 20.10.2015
-----------------
+------------------
 
 * Ability to override `strip` attribute at class level (#27).
 * Fix `strip` in XMLObjectifyParser (#28).
@@ -72,7 +72,7 @@ History
 * Lxml will not be installed where it is not supported (#3).
 
 0.2.1 - 23.09.2015
-----------------
+------------------
 
 * Remove encoding declaration for XMLObjectifyParser
 
