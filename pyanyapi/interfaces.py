@@ -369,3 +369,25 @@ class CSVInterface(BaseInterface):
 
     def parse(self, query):
         return self.execute_method(query)
+
+
+class IndexOfInterface(BaseInterface):
+    """
+    Simple interface that tries to find specified string inside another string, storing boolean values.
+    Settings example:
+    {
+        "has_bar": "bar",
+        "has_foo": "foo"
+    }
+    If content contains "bar" string, interface property "has_bar" will be True.
+    """
+    _error_message = 'Can not perform string search.'
+
+    def execute_method(self, settings):
+        try:
+            return str(settings) in str(self.content)
+        except (TypeError, ValueError):
+            raise ResponseParseError(self._error_message, self.content)
+
+    def parse(self, query):
+        return self.execute_method(query)

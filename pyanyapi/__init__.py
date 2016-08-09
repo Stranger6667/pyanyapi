@@ -13,6 +13,7 @@ from .parsers import (
     AJAXParser,
     RegExpParser,
     CSVParser,
+    IndexOfParser,
 )
 from .interfaces import (
     BaseInterface,
@@ -26,5 +27,6 @@ from .interfaces import (
     AJAXInterface,
     RegExpInterface,
     CSVInterface,
+    IndexOfInterface,
 )
 from .decorators import interface_property, interface_method

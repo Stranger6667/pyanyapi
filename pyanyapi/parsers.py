@@ -14,6 +14,7 @@ from .interfaces import (
     RegExpInterface,
     CSVInterface,
     CombinedInterface,
+    IndexOfInterface,
 )
 from .helpers import attach_attribute, attach_cached_property
 
@@ -194,3 +195,15 @@ class CSVParser(BaseParser):
         kwargs = super(CSVParser, self).get_interface_kwargs()
         kwargs.update(self.reader_kwargs)
         return kwargs
+
+
+class IndexOfParser(BaseParser):
+    interface_class = IndexOfInterface
+
+    def prepare_content(self, content):
+        if isinstance(content, bytes):
+            try:
+                return content.decode()
+            except UnicodeDecodeError:  # For python 2/3 compatibility
+                pass
+        return content
