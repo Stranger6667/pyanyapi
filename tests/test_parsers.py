@@ -326,25 +326,20 @@ class BrokenObject(object):
         return None
 
 
-@pytest.mark.parametrize(
-    'content, should_fail',
-    (
-        ('foo-bár', False),
-        (b'foo-b\xc3\xa1r', False),
-        (BrokenObject(), True)
-    )
-)
-def test_indexof_parse(content, should_fail):
+class TestIndexOfParser:
     parser = IndexOfParser({
         'has_bar': 'bár',
         'has_baz': 'báz',
     })
 
-    parsed = parser.parse(content)
-    if should_fail:
-        for attr in ('has_bar', 'has_baz'):
-            with pytest.raises(ResponseParseError):
-                getattr(parsed, attr)
-    else:
+    @pytest.mark.parametrize('content', ('foo-bár', b'foo-b\xc3\xa1r'))
+    def test_default(self, content):
+        parsed = self.parser.parse(content)
         assert parsed.has_bar
         assert not parsed.has_baz
+
+    @pytest.mark.parametrize('attr', parser.settings.keys())
+    def test_parsing_error(self, attr):
+        parsed = self.parser.parse(BrokenObject())
+        with pytest.raises(ResponseParseError):
+            getattr(parsed, attr)
