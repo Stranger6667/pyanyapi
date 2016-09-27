@@ -45,3 +45,5 @@ htmlcov
 .env
 .bootstrap
 *.bak
+docs/_build
+.cache

@@ -38,7 +38,7 @@ or from source:
     $ sudo python setup.py install
 
 Documentation
-=============
+-------------
 
 You can view documentation online at:
 
