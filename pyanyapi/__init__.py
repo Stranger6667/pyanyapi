@@ -30,3 +30,6 @@ from .interfaces import (
     IndexOfInterface,
 )
 from .decorators import interface_property, interface_method
+
+
+__version__ = '0.6.0'

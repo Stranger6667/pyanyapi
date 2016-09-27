@@ -6,6 +6,8 @@ import sys
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
+import pyanyapi
+
 
 PYPY = hasattr(sys, 'pypy_translation_info')
 PYPY3 = PYPY and sys.version_info[0] == 3
@@ -54,7 +56,7 @@ if not JYTHON:
 setup(
     name='pyanyapi',
     url='https://github.com/Stranger6667/pyanyapi',
-    version='0.6.0',
+    version=pyanyapi.__version__,
     packages=['pyanyapi'],
     license='MIT',
     author='Dmitry Dygalo',
