@@ -34,7 +34,7 @@ class PyTest(TestCommand):
 
 
 requirements = ['PyYAML>=3.11']
-test_requirements = ['pytest>=2.8.0']
+test_requirements = ['pytest>=2.8.0,<3.0.0']
 
 
 if sys.version_info < (3, 3):
