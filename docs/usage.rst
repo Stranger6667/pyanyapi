@@ -12,7 +12,7 @@ Basic setup
 
 Basic parsers can be declared in the following way:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser
 
@@ -27,7 +27,7 @@ Basic parsers can be declared in the following way:
 
 Or it can be configured in runtime:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser
 
@@ -39,7 +39,7 @@ Or it can be configured in runtime:
 To get all parsing results as a dict there is ``parse_all`` method.
 All properties (include defined with ``@interface_property`` decorator) will be returned.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import JSONParser
 
@@ -60,7 +60,7 @@ Complex setup
 In some cases you may want to apply extra transformations to result
 list. Here comes "base-children" setup style.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser
 
@@ -80,7 +80,7 @@ list. Here comes "base-children" setup style.
 
 There is another option to interact with sub-elements. Sub parsers!
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser
 
@@ -115,7 +115,7 @@ Settings inheritance
 
 Settings attribute is merged from all ancestors of current parser.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser
 
@@ -149,7 +149,7 @@ Results stripping
 
 Parsers can automagically strip trailing whitespaces with ``strip=True`` option.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import XMLParser
 
@@ -168,7 +168,7 @@ declaration. Unfortunately XPath 2.0 is not supported by lxml. XML is
 about the same as HTMLParser, but uses a different lxml parser internally.
 Here is an example of usage with ``requests``:
 
-.. code:: python
+.. code-block:: python
 
     >>> import requests
     >>> import pyanyapi
@@ -180,7 +180,7 @@ Here is an example of usage with ``requests``:
 
 If you need, you can execute more XPath queries at any time you want:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser
 
@@ -199,7 +199,7 @@ Lxml provides interesting feature - objectified interface for XML. It
 converts whole XML to Python object. This parser doesn't require any
 settings. E.g:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import XMLObjectifyParser
 
@@ -212,7 +212,7 @@ JSON
 
 Settings syntax in based on PostgreSQL statements syntax.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import JSONParser
 
@@ -222,7 +222,7 @@ Settings syntax in based on PostgreSQL statements syntax.
 
 Or you can get access to values in lists by index:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import JSONParser
 
@@ -232,7 +232,7 @@ Or you can get access to values in lists by index:
 
 And executes more queries after initial parsing:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import JSONParser
 
@@ -245,7 +245,7 @@ YAML
 ~~~~
 Equal to JSON parser, but works with YAML data.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import YAMLParser
 
@@ -261,7 +261,7 @@ with bundled tools, you can use a parser based on regular expressions.
 Settings are based on Python's regular expressions. It is the most powerful
 parser, because of its simplicity.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import RegExpParser
 
@@ -271,7 +271,7 @@ parser, because of its simplicity.
 
 And executes more queries after initial parsing:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import RegExpParser
 
@@ -282,7 +282,7 @@ And executes more queries after initial parsing:
 
 Also, you can pass flags for regular expressions on parser initialization:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import RegExpParser
 
@@ -299,7 +299,7 @@ CSV Interface
 
 Operates with CSV data with simple queries in format 'row_id:column_id'.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import CSVParser
 
@@ -309,7 +309,7 @@ Operates with CSV data with simple queries in format 'row_id:column_id'.
 
 Also, you can pass custom kwargs for `csv.reader` on parser initialization:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import CSVParser
 
@@ -322,7 +322,7 @@ AJAX Interface
 
 AJAX is a very popular technology and often use JSON data with HTML values. Here is an example:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import AJAXParser
 
@@ -334,7 +334,7 @@ AJAX is a very popular technology and often use JSON data with HTML values. Here
 It uses combination of XPath queries and PostgreSQL-based JSON lookups.
 Custom queries execution is also available:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import AJAXParser
 
@@ -352,7 +352,7 @@ You can easily declare your own interface. For that you should define
 an example of naive CSVInterface, which provides an ability to get the column
 value by index. Also you should create a separate parser for that.
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import BaseInterface, BaseParser
 
@@ -381,7 +381,7 @@ special decorators ``interface_method`` and ``interface_property``.
 
 Custom method example:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser, interface_method
 
@@ -403,7 +403,7 @@ Custom method example:
 
 Custom property example:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser, interface_property
 
@@ -441,7 +441,7 @@ different parsers transparently. E.g. some server usually returns JSON,
 but in cases of server errors it returns HTML pages with some text.
 Then:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import CombinedParser, HTMLParser, JSONParser
 
@@ -470,7 +470,7 @@ Often with AJAX requests.
 
 You can work with such data in the following way:
 
-.. code:: python
+.. code-block:: python
 
     from pyanyapi import HTMLParser, JSONParser, interface_property
 
