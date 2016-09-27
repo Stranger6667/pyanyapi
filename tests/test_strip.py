@@ -1,6 +1,6 @@
 # coding: utf-8
 from .conftest import lxml_is_supported, not_pypy
-from pyanyapi import RegExpParser, JSONParser, AJAXParser, XMLParser, XMLObjectifyParser
+from pyanyapi.parsers import RegExpParser, JSONParser, AJAXParser, XMLParser, XMLObjectifyParser
 
 
 JSON_CONTENT = '{"container":" 1 "}'

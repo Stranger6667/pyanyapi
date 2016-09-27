@@ -1,5 +1,5 @@
 # coding: utf-8
-from pyanyapi import IndexOfInterface
+from pyanyapi.interfaces import IndexOfInterface
 
 
 def test_indexof_interface():

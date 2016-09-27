@@ -5,7 +5,8 @@ import pytest
 
 from ._compat import patch
 from .conftest import ChildParser, SubParser, SimpleParser, lxml_is_supported, lxml_is_not_supported
-from pyanyapi import (
+from pyanyapi.exceptions import ResponseParseError
+from pyanyapi.parsers import (
     XMLObjectifyParser,
     XMLParser,
     JSONParser,
@@ -16,7 +17,6 @@ from pyanyapi import (
     HTMLParser,
     IndexOfParser
 )
-from pyanyapi.exceptions import ResponseParseError
 
 
 HTML_CONTENT = "<html><body><a href='#test'>test</body></html>"

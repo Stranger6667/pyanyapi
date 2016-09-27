@@ -4,7 +4,8 @@ import sys
 
 import pytest
 
-from pyanyapi import JSONParser, RegExpParser, CombinedParser, interface_property, interface_method, HTMLParser
+from pyanyapi.decorators import interface_property, interface_method
+from pyanyapi.parsers import JSONParser, RegExpParser, CombinedParser, HTMLParser
 
 
 class EmptyValuesParser(CombinedParser):
