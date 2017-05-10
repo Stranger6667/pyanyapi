@@ -37,6 +37,28 @@ or from source:
 
     $ sudo python setup.py install
 
+Usage
+-----
+
+The library provides an ability to create API over various content.
+Currently there are bundled tools to work with HTML, XML, CSV, JSON and YAML.
+Initially it was created to work with ``requests`` library.
+
+Basic parsers can be declared in the following way:
+
+.. code-block:: python
+
+    from pyanyapi.parsers import HTMLParser
+
+
+    class SimpleParser(HTMLParser):
+        settings = {'header': 'string(.//h1/text())'}
+
+
+    >>> api = SimpleParser().parse('<html><body><h1>Value</h1></body></html>')
+    >>> api.header
+    Value
+
 Documentation
 -------------
 
