@@ -63,6 +63,15 @@ def test_yaml_parser_error():
         parsed.test
 
 
+def test_yaml_parser_vulnerability():
+    """
+    In case of usage of yaml.load `test` value will be equal to 0.
+    """
+    parsed = YAMLParser({'test': 'container > test'}).parse('!!python/object/apply:os.system ["exit 0"]')
+    with pytest.raises(ResponseParseError):
+        parsed.test
+
+
 @lxml_is_supported
 @pytest.mark.parametrize(
     'settings', (
