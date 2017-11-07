@@ -274,7 +274,7 @@ class YAMLInterface(DictInterface):
 
     def perform_parsing(self):
         try:
-            return yaml.load(self.content)
+            return yaml.safe_load(self.content)
         except yaml.error.YAMLError:
             raise ResponseParseError(self._error_message, self.content)
 
