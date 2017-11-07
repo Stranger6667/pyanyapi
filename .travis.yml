@@ -23,6 +23,8 @@ matrix:
     - python: 3.5
       env: $JYTHON=true
 install:
+  - if [ $TOX_ENV = "py32" ]; then travis_retry pip install "virtualenv<14.0.0" "tox<1.8.0"; fi
+  - if [ $TOX_ENV = "pypy3" ]; then travis_retry pip install "virtualenv<14.0.0" "tox<1.8.0"; fi
   - if [ -z "$JYTHON" ]; then pip install codecov; fi
   - if [ "$TOX_ENV" ]; then travis_retry pip install "virtualenv<14.0.0" tox; fi
 before_install:
