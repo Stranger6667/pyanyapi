@@ -3,7 +3,6 @@
 Classes for fabrics of interfaces.
 Generates interfaces dynamically from given settings.
 """
-from ._compat import etree
 from .interfaces import (
     XPathInterface,
     XMLInterface,
@@ -133,18 +132,11 @@ class CombinedParser(BaseParser):
         return kwargs
 
 
-class LXMLParser(BaseParser):
-
-    def parse(self, *args, **kwargs):
-        assert etree, 'Using %s, but lxml is not installed' % self.__class__.__name__
-        return super(LXMLParser, self).parse(*args, **kwargs)
-
-
-class HTMLParser(LXMLParser):
+class HTMLParser(BaseParser):
     interface_class = XPathInterface
 
 
-class XMLParser(LXMLParser):
+class XMLParser(BaseParser):
     interface_class = XMLInterface
 
     def prepare_content(self, content):
@@ -167,7 +159,7 @@ class YAMLParser(BaseParser):
     interface_class = YAMLInterface
 
 
-class AJAXParser(LXMLParser):
+class AJAXParser(BaseParser):
     interface_class = AJAXInterface
 
 
@@ -202,8 +194,5 @@ class IndexOfParser(BaseParser):
 
     def prepare_content(self, content):
         if isinstance(content, bytes):
-            try:
-                return content.decode()
-            except UnicodeDecodeError:  # For python 2/3 compatibility
-                pass
+            return content.decode()
         return content

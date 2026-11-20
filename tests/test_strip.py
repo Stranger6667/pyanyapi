@@ -1,5 +1,4 @@
 # coding: utf-8
-from .conftest import lxml_is_supported, not_pypy
 from pyanyapi.parsers import RegExpParser, JSONParser, AJAXParser, XMLParser, XMLObjectifyParser
 
 
@@ -25,14 +24,12 @@ def test_strip_json_parser():
     assert JSONParser(settings, strip=True).parse(JSON_CONTENT).all == '1'
 
 
-@lxml_is_supported
 def test_strip_ajax_parser():
     settings = {'all': 'content > string(//p)'}
     assert AJAXParser(settings).parse(AJAX_CONTENT).all == ' Pcontent '
     assert AJAXParser(settings, strip=True).parse(AJAX_CONTENT).all == 'Pcontent'
 
 
-@lxml_is_supported
 def test_strip_xml_parser():
     settings = {'all': 'string(//p)'}
     assert XMLParser(settings).parse(XML_CONTENT).all == ' Pcontent '
@@ -49,7 +46,6 @@ def test_class_override():
     assert CustomParser(strip=False).parse(' 1 ').all == ' 1 '
 
 
-@lxml_is_supported
 def test_objectify_strip_default():
     default = XMLObjectifyParser().parse(OBJECTIFY_CONTENT)
     assert default.Messages.Message == ' abc '
@@ -57,8 +53,6 @@ def test_objectify_strip_default():
     assert default.first.second.third == ' inside '
 
 
-@lxml_is_supported
-@not_pypy
 def test_objectify_strip():
     with_strip = XMLObjectifyParser(strip=True).parse(OBJECTIFY_CONTENT)
     assert with_strip.Messages.Message == 'abc'

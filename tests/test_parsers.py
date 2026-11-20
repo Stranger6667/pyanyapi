@@ -1,10 +1,10 @@
 # coding: utf-8
 import re
+from unittest.mock import patch
 
 import pytest
 
-from ._compat import patch
-from .conftest import ChildParser, SubParser, SimpleParser, lxml_is_supported, lxml_is_not_supported
+from .conftest import ChildParser, SubParser, SimpleParser
 from pyanyapi.exceptions import ResponseParseError
 from pyanyapi.parsers import (
     XMLObjectifyParser,
@@ -36,21 +36,18 @@ CSV_CONTENT = '1,2,3\r\n4,5,6\r\n'
 CSV_CONTENT_DIFFERENT_DELIMITER = '1;2;3\r\n4;5;6\r\n'
 
 
-@lxml_is_supported
 def test_xml_objectify_parser():
     parsed = XMLObjectifyParser().parse('<xml><test>123</test></xml>')
     assert parsed.test == 123
     assert parsed.not_existing is None
 
 
-@lxml_is_supported
 def test_xml_objectify_parser_error():
     parsed = XMLObjectifyParser().parse('<xml><test>123')
     with pytest.raises(ResponseParseError):
         parsed.test
 
 
-@lxml_is_supported
 def test_xml_parser_error():
     parsed = XMLParser({'test': None}).parse('<xml><test>123')
     with pytest.raises(ResponseParseError):
@@ -72,7 +69,6 @@ def test_yaml_parser_vulnerability():
         parsed.test
 
 
-@lxml_is_supported
 @pytest.mark.parametrize(
     'settings', (
         {'success': {'base': '//test-mode/text()'}},
@@ -85,7 +81,6 @@ def test_xml_parsed(settings):
     assert parsed.parse('string(//id/text())') == '32e9a4a2'
 
 
-@lxml_is_supported
 def test_xml_simple_settings():
     assert XMLParser({'id': {'base': 'string(//id/text())'}}).parse(XML_CONTENT).id == '32e9a4a2'
 
@@ -159,6 +154,7 @@ def test_multiply_parsers_declaration(dummy_parser):
         ('{"container":[[1],[],[3]]}', 'third', [1, None, 3]),
         ('{"container":null}', 'null', None),
         ('{"container":[1,2]}', 'test', '1,2'),
+        ('{"container":"value"}', 'combined', '123-value'),
     )
 )
 def test_empty_values(empty_values_parser, content, attr, expected):
@@ -176,9 +172,13 @@ def test_efficient_parsing(empty_values_parser):
         assert not regexp_parser.called
 
 
-@lxml_is_supported
 def test_simple_config_xml_parser():
     parsed = XMLParser({'test': 'string(//test/text())'}).parse('<xml><test>123</test></xml>')
+    assert parsed.test == '123'
+
+
+def test_xml_parser_bytes():
+    parsed = XMLParser({'test': 'string(//test/text())'}).parse(b'<?xml version="1.0" encoding="UTF-8"?><xml><test>123</test></xml>')
     assert parsed.test == '123'
 
 
@@ -195,7 +195,6 @@ def test_settings_inheritance():
     assert parser.settings['parent1'] == 'test1'
 
 
-@lxml_is_supported
 def test_complex_config():
     parsed = XMLParser({'test': {'base': '//test', 'children': 'text()|*//text()'}}).parse(
         '<xml><test>123 </test><test><inside> 234</inside></test></xml>'
@@ -212,20 +211,13 @@ def test_json_value_error_parse():
 
 
 def test_regexp_parse():
-    assert RegExpParser({'digits': '\d+'}).parse('123abc').parse('[a-z]+') == 'abc'
+    assert RegExpParser({'digits': r'\d+'}).parse('123abc').parse('[a-z]+') == 'abc'
 
 
 def test_yaml_parse():
     assert YAMLParser({'test': 'container > test'}).parse(YAML_CONTENT).test == '123'
 
 
-@lxml_is_not_supported
-def test_lxml_not_supported():
-    with pytest.raises(AssertionError):
-        XMLParser({'test': '//p'}).parse('')
-
-
-@lxml_is_supported
 def test_ajax_parser():
     parsed = AJAXParser({'p': 'content > string(//p)', 'span': 'content > string(//span)'}).parse(AJAX_CONTENT)
     assert parsed.p == 'Pcontent'
@@ -233,7 +225,6 @@ def test_ajax_parser():
     assert parsed.parse('third > inner > string(//p)') == 'third_p'
 
 
-@lxml_is_supported
 def test_ajax_parser_cache():
     parsed = AJAXParser({
         'p': 'content > string(//p)',
@@ -251,7 +242,6 @@ def test_ajax_parser_cache():
         assert len(parsed._inner_cache) == 2
 
 
-@lxml_is_supported
 def test_ajax_parser_invalid_settings():
     parsed = AJAXParser({
         'valid': 'third > inner > string(//p)',
@@ -271,8 +261,8 @@ def test_parse_memoization():
 
 
 def test_regexp_settings():
-    assert RegExpParser({'test': '\d+.\d+'}).parse(MULTILINE_CONTENT).test == '123'
-    assert RegExpParser({'test': '\d+.\d+'}, flags=re.DOTALL).parse(MULTILINE_CONTENT).test == '123\n234'
+    assert RegExpParser({'test': r'\d+.\d+'}).parse(MULTILINE_CONTENT).test == '123'
+    assert RegExpParser({'test': r'\d+.\d+'}, flags=re.DOTALL).parse(MULTILINE_CONTENT).test == '123\n234'
 
 
 def test_parse_all():
@@ -280,6 +270,7 @@ def test_parse_all():
     parser = SimpleParser(flags=re.DOTALL)
     assert parser.parse(MULTILINE_CONTENT).parse_all() == expected
     assert parser.parse_all(MULTILINE_CONTENT) == expected
+    assert parser.parse(MULTILINE_CONTENT).test_5('value') == 'Will not be included'
 
 
 def test_parse_all_combined_parser(dummy_parser):
@@ -310,7 +301,6 @@ def test_csv_parser_error():
         parsed.test
 
 
-@lxml_is_supported
 @pytest.mark.parametrize('sub_parser', (SubParser, SubParser()))
 def test_children(sub_parser):
 

@@ -1,7 +1,4 @@
 # coding: utf-8
-import platform
-import sys
-
 import pytest
 
 from pyanyapi.decorators import interface_property, interface_method
@@ -10,7 +7,7 @@ from pyanyapi.parsers import JSONParser, RegExpParser, CombinedParser, HTMLParse
 
 class EmptyValuesParser(CombinedParser):
     parsers = [
-        RegExpParser({'test': '\d,\d'}),
+        RegExpParser({'test': r'\d,\d'}),
         JSONParser(
             {
                 'test': {
@@ -84,8 +81,8 @@ class SubParser(HTMLParser):
 
 class SimpleParser(RegExpParser):
     settings = {
-        'test': '\d+.\d+',
-        'test2': '\d+',
+        'test': r'\d+.\d+',
+        'test2': r'\d+',
         'test3': 'a',
     }
 
@@ -97,11 +94,3 @@ class SimpleParser(RegExpParser):
     def test_5(self, value):
         return 'Will not be included'
 
-
-PYPY = hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 2
-PYPY3 = hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 3
-JYTHON = platform.system() == 'Java'
-
-lxml_is_supported = pytest.mark.skipif(PYPY3 or JYTHON, reason='lxml is not supported')
-lxml_is_not_supported = pytest.mark.skipif(not (PYPY3 or JYTHON), reason='Only on if lxml is supported')
-not_pypy = pytest.mark.skipif(PYPY, reason='PyPy is not supported')

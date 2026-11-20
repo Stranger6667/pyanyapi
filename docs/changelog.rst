@@ -6,6 +6,9 @@ Changelog
 Unreleased
 ----------
 
+* ``lxml`` is a required dependency on all platforms.
+* JSON is parsed with the standard library ``json`` module instead of ``ujson``.
+* Removed support for Python 2 and Jython.
 * Fixed ``AJAXParser`` raising ``TypeError`` instead of returning an empty result for queries that do not point to a string with ``lxml>=6``.
 
 0.6.0 - 09.08.2016
