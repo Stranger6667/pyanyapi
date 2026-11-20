@@ -202,11 +202,12 @@ class XMLObjectifyInterface(BaseInterface):
 
     def maybe_strip(self, value):
         if self.strip and isinstance(value, objectify.ObjectifiedElement):
-            if isinstance(value, objectify.StringElement) and value.text is not None:
-                value = value.text.strip()
-            else:
-                for key, inner_value in value.__dict__.items():
-                    value[key] = self.maybe_strip(inner_value)
+            if isinstance(value, objectify.StringElement):
+                return value.text.strip() if value.text is not None else value
+            # Not `value.__dict__`: on PyPy it is not lxml's children mapping, so nothing was stripped
+            for child in value.iterdescendants(tag=etree.Element):
+                if isinstance(child, objectify.StringElement) and child.text is not None:
+                    child._setText(child.text.strip())
         return value
 
 

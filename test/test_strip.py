@@ -58,3 +58,8 @@ def test_objectify_strip():
     assert with_strip.Messages.Message == 'abc'
     assert with_strip.test == 'bcd'
     assert with_strip.first.second.third == 'inside'
+
+
+def test_objectify_strip_repeated_elements():
+    parsed = XMLObjectifyParser(strip=True).parse('<xml><Messages><Message> a </Message><Message> b </Message></Messages></xml>')
+    assert [str(message) for message in parsed.Messages.Message] == ['a', 'b']
