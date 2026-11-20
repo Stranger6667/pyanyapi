@@ -30,7 +30,7 @@ jobs:
 
       - name: Extract release notes
         run: |
-          awk -v v="${GITHUB_REF_NAME#v}" 'index($0, "## [" v "]") == 1 {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md > release_notes.md
+          awk -v v="${GITHUB_REF_NAME#v}" 'index($0, "## [" v "]") == 1 {f=1; next} /^## / {f=0} f' CHANGELOG.md > release_notes.md
           test -s release_notes.md
 
       - name: Create GitHub release
