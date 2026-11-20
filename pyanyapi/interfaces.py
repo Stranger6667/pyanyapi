@@ -306,7 +306,7 @@ class AJAXInterface(JSONInterface):
         inner_interface = self.get_inner_interface(target, json_part)
         try:
             return inner_interface.parse(xpath_part)
-        except (etree.XMLSyntaxError, ValueError):
+        except (etree.XMLSyntaxError, ValueError, TypeError):
             return inner_interface.empty_result
 
 
