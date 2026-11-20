@@ -33,8 +33,10 @@ dependencies = ["lxml>=4.9.1", "PyYAML>=6.0"]
 
 [project.optional-dependencies]
 tests = ["coverage[toml]>=7.2", "pytest>=8"]
+docs = ["pymdown-extensions", "zensical>=0.1.1,<0.2"]
 
 [project.urls]
+Documentation = "https://pyanyapi.readthedocs.io/en/stable/"
 Changelog = "https://github.com/Stranger6667/pyanyapi/blob/master/CHANGELOG.md"
 "Bug Tracker" = "https://github.com/Stranger6667/pyanyapi/issues"
 Funding = "https://github.com/sponsors/Stranger6667"

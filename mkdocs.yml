@@ -1,0 +1,26 @@
+site_name: PyAnyAPI
+site_description: Tools for convenient interface creation over various types of data in a declarative way.
+repo_url: https://github.com/Stranger6667/pyanyapi
+
+nav:
+  - Introduction: index.md
+  - usage.md
+  - parsers.md
+  - complex.md
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.footer
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+
+plugins:
+  - search
