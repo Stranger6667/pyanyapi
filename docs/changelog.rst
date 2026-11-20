@@ -10,6 +10,7 @@ Unreleased
 * JSON is parsed with the standard library ``json`` module instead of ``ujson``.
 * Support for Python 3.11-3.15.
 * Removed support for Python 2.6-3.10 and Jython.
+* Fixed ``XMLObjectifyParser(strip=True)`` not stripping nested elements on PyPy and stripping only the first of repeated elements.
 * Fixed ``AJAXParser`` raising ``TypeError`` instead of returning an empty result for queries that do not point to a string with ``lxml>=6``.
 
 0.6.0 - 09.08.2016
