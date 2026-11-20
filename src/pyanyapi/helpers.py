@@ -1,14 +1,12 @@
-# coding: utf-8
-"""
-Functions to dynamically attach attributes to classes.
+"""Functions to dynamically attach attributes to classes.
+
 Most of parsing results are cached because of immutability of input data.
 """
 
 
-class cached_property(object):
-    """
-    Copied from Django.
-    """
+class cached_property:
+    """Copied from Django."""
+
     def __init__(self, func):
         self.func = func
 

@@ -1,7 +1,5 @@
-# coding: utf-8
-"""
-Classes to be filled with interface declarations.
-"""
+"""Classes to be filled with interface declarations."""
+
 import csv
 import json
 import re
@@ -13,8 +11,7 @@ from lxml.etree import HTMLParser, XMLParser
 from .exceptions import ResponseParseError
 from .helpers import memoize
 
-
-DICT_LOOKUP = ' > '
+DICT_LOOKUP = " > "
 
 
 def expand_results(value):
@@ -23,10 +20,9 @@ def expand_results(value):
     return value
 
 
-class BaseInterface(object):
-    """
-    Basic dynamically generated interface.
-    """
+class BaseInterface:
+    """Basic dynamically generated interface."""
+
     content = None
     empty_result = None
 
@@ -48,7 +44,7 @@ class BaseInterface(object):
 
     @property
     def parsed_content(self):
-        if not hasattr(self, '_parsed_content'):
+        if not hasattr(self, "_parsed_content"):
             self._parsed_content = self.perform_parsing()
         return self._parsed_content
 
@@ -59,14 +55,12 @@ class BaseInterface(object):
         raise NotImplementedError
 
     def parse_all(self):
-        """
-        Processes all available properties and returns results as dictionary.
-        """
-        return dict(
-            (key, expand_results(getattr(self, key, self.empty_result)))
+        """Processes all available properties and returns results as dictionary."""
+        return {
+            key: expand_results(getattr(self, key, self.empty_result))
             for key, attr in self.__class__.__dict__.items()
-            if hasattr(attr, '_attached') and type(attr).__name__ == 'cached_property'
-        )
+            if hasattr(attr, "_attached") and type(attr).__name__ == "cached_property"
+        }
 
     def maybe_strip(self, value):
         if self.strip and isinstance(value, str):
@@ -79,22 +73,19 @@ EMPTY_RESULT = object()
 
 
 class CombinedInterface(BaseInterface):
-
     def __init__(self, parsers, *args, **kwargs):
         self.parsers = parsers
-        super(CombinedInterface, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __getattribute__(self, item):
         # Catch self.parsers and dynamically attached attributes
         try:
-            return super(CombinedInterface, self).__getattribute__(item)
+            return super().__getattribute__(item)
         except AttributeError:
             return self.walk(item)
 
     def walk(self, item):
-        """
-        Recursively walks through all available parsers.
-        """
+        """Recursively walks through all available parsers."""
         for parser in self.parsers:
             try:
                 if item not in parser.attributes:
@@ -108,15 +99,15 @@ class CombinedInterface(BaseInterface):
                 pass
 
     def parse_all(self):
-        result = super(CombinedInterface, self).parse_all()
+        result = super().parse_all()
         for parser in self.parsers:
             result.update(parser.parse_all(self.content))
         return result
 
 
 class XPathInterface(BaseInterface):
-    """
-    Uses as base class for HTML/XML-based content.
+    """Uses as base class for HTML/XML-based content.
+
     Use XPath 1.0 syntax, which is compatible with LXML.
     Because of lack of support of XPath 2.0 some parts of settings structure
     is not intuitive.
@@ -132,23 +123,24 @@ class XPathInterface(BaseInterface):
     'children' key usually uses for modification of result of 'base' expression
     before concatenation.
     """
+
     parser_class = HTMLParser
-    empty_result = ''
-    _error_message = 'HTML data can not be parsed.'
+    empty_result = ""
+    _error_message = "HTML data can not be parsed."
 
     def perform_parsing(self):
         try:
             return etree.fromstring(self.content, self.parser_class())
-        except etree.XMLSyntaxError:
-            raise ResponseParseError(self._error_message, self.content)
+        except etree.XMLSyntaxError as exc:
+            raise ResponseParseError(self._error_message, self.content) from exc
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
-            result = self.parse(settings['base'])
-            child_query = settings.get('children')
+            result = self.parse(settings["base"])
+            child_query = settings.get("children")
             if child_query:
-                return [self.maybe_strip(''.join(element.xpath(child_query))) for element in result]
-            sub_parser = settings.get('parser')
+                return [self.maybe_strip("".join(element.xpath(child_query))) for element in result]
+            sub_parser = settings.get("parser")
             if sub_parser:
                 return [
                     (sub_parser() if callable(sub_parser) else sub_parser).parse(etree.tostring(element))
@@ -164,12 +156,11 @@ class XPathInterface(BaseInterface):
 
 class XMLInterface(XPathInterface):
     parser_class = XMLParser
-    _error_message = 'XML data can not be parsed.'
+    _error_message = "XML data can not be parsed."
 
 
 class XMLObjectifyInterface(BaseInterface):
-    """
-    Parse XML in the way, that its attributes can be accessed like attributes of python object:
+    """Parse XML in the way, that its attributes can be accessed like attributes of python object.
 
     <xml><test>123</test></xml>
 
@@ -181,19 +172,20 @@ class XMLObjectifyInterface(BaseInterface):
 
     Also this interface does not require any settings.
     """
-    _error_message = 'XML data can not be parsed.'
+
+    _error_message = "XML data can not be parsed."
 
     def perform_parsing(self):
         try:
             return objectify.fromstring(self.content)
-        except etree.XMLSyntaxError:
-            raise ResponseParseError(self._error_message, self.content)
+        except etree.XMLSyntaxError as exc:
+            raise ResponseParseError(self._error_message, self.content) from exc
 
     def __getattribute__(self, item):
         try:
-            return super(XMLObjectifyInterface, self).__getattribute__(item)
+            return super().__getattribute__(item)
         except AttributeError:
-            if item == '_parsed_content':
+            if item == "_parsed_content":
                 raise
             try:
                 return self.maybe_strip(self.parsed_content.__getattribute__(item))
@@ -212,8 +204,7 @@ class XMLObjectifyInterface(BaseInterface):
 
 
 class DictInterface(BaseInterface):
-    """
-    Interface for python dictionaries. Based on PostgreSQL statements syntax.
+    """Interface for python dictionaries. Based on PostgreSQL statements syntax.
 
     {
         'external_id': 'container > id'
@@ -242,12 +233,14 @@ class DictInterface(BaseInterface):
 
     def execute_method(self, settings):
         if isinstance(settings, dict):
-            result = self.parse(settings['base'])
-            child_query = settings.get('children')
+            result = self.parse(settings["base"])
+            child_query = settings.get("children")
             if child_query:
-                return [
-                    self.get_from_dict(r, child_query) or self.empty_result for r in result
-                ] if result else self.empty_result
+                return (
+                    [self.get_from_dict(r, child_query) or self.empty_result for r in result]
+                    if result
+                    else self.empty_result
+                )
             return result
 
         return self.parse(settings)
@@ -257,28 +250,27 @@ class DictInterface(BaseInterface):
 
 
 class JSONInterface(DictInterface):
-    _error_message = 'JSON data can not be parsed.'
+    _error_message = "JSON data can not be parsed."
 
     def perform_parsing(self):
         try:
             return json.loads(self.content)
-        except (ValueError, TypeError):
-            raise ResponseParseError(self._error_message, self.content)
+        except (ValueError, TypeError) as exc:
+            raise ResponseParseError(self._error_message, self.content) from exc
 
 
 class YAMLInterface(DictInterface):
-    _error_message = 'YAML data can not be parsed.'
+    _error_message = "YAML data can not be parsed."
 
     def perform_parsing(self):
         try:
             return yaml.safe_load(self.content)
-        except yaml.error.YAMLError:
-            raise ResponseParseError(self._error_message, self.content)
+        except yaml.error.YAMLError as exc:
+            raise ResponseParseError(self._error_message, self.content) from exc
 
 
 class AJAXInterface(JSONInterface):
-    """
-    Allows to execute XPath, combined with dictionary-based lookups from DictInterface.
+    """Allows to execute XPath, combined with dictionary-based lookups from DictInterface.
 
     {
         'p': 'container > string(//p)'
@@ -286,15 +278,16 @@ class AJAXInterface(JSONInterface):
 
     which will get "p_content" from {"container":"<p>p_content</p>"}
     """
+
     inner_interface_class = XPathInterface
 
     def __init__(self, *args, **kwargs):
         self._inner_cache = {}
-        super(AJAXInterface, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_inner_interface(self, text, json_part):
         if json_part not in self._inner_cache:
-            inner_content = super(AJAXInterface, self).get_from_dict(text, json_part)
+            inner_content = super().get_from_dict(text, json_part)
             self._inner_cache[json_part] = self.inner_interface_class(inner_content, self.strip)
         return self._inner_cache[json_part]
 
@@ -308,9 +301,9 @@ class AJAXInterface(JSONInterface):
 
 
 class RegExpInterface(BaseInterface):
-    r"""
-    Parser based on regular expressions. It is the most powerful parser, because of
-    its simplicity.
+    r"""Parser based on regular expressions.
+
+    It is the most powerful parser, because of its simplicity.
     Settings example:
 
     {
@@ -323,7 +316,7 @@ class RegExpInterface(BaseInterface):
 
     def __init__(self, content, strip=False, flags=0):
         self.flags = flags
-        super(RegExpInterface, self).__init__(content, strip)
+        super().__init__(content, strip)
 
     def execute_method(self, settings):
         matches = re.findall(settings, self.content, self.flags)
@@ -336,8 +329,7 @@ class RegExpInterface(BaseInterface):
 
 
 class CSVInterface(BaseInterface):
-    """
-    Operates with CSV data with simple queries in format 'row_id:column_id'.
+    r"""Operates with CSV data with simple queries in format 'row_id:column_id'.
 
     {
         "value": "1:2"
@@ -345,20 +337,21 @@ class CSVInterface(BaseInterface):
 
     Will get 6 from "1,2,3\r\n4,5,6"
     """
-    _error_message = 'CSV data can not be parsed.'
+
+    _error_message = "CSV data can not be parsed."
 
     def __init__(self, content, strip=False, **reader_kwargs):
         self.reader_kwargs = reader_kwargs
-        super(CSVInterface, self).__init__(content, strip)
+        super().__init__(content, strip)
 
     def perform_parsing(self):
         try:
             return list(csv.reader(self.content.split(), **self.reader_kwargs))
-        except (TypeError, AttributeError):
-            raise ResponseParseError(self._error_message, self.content)
+        except (TypeError, AttributeError) as exc:
+            raise ResponseParseError(self._error_message, self.content) from exc
 
     def execute_method(self, settings):
-        row, column = settings.split(':')
+        row, column = settings.split(":")
         try:
             return self.parsed_content[int(row)][int(column)]
         except (IndexError, TypeError):
@@ -369,8 +362,8 @@ class CSVInterface(BaseInterface):
 
 
 class IndexOfInterface(BaseInterface):
-    """
-    Simple interface that tries to find specified string inside another string, storing boolean values.
+    """Simple interface that tries to find specified string inside another string, storing boolean values.
+
     Settings example:
     {
         "has_bar": "bar",
@@ -378,13 +371,14 @@ class IndexOfInterface(BaseInterface):
     }
     If content contains "bar" string, interface property "has_bar" will be True.
     """
-    _error_message = 'Can not perform string search.'
+
+    _error_message = "Can not perform string search."
 
     def execute_method(self, settings):
         try:
             return str(settings) in str(self.content)
-        except (TypeError, ValueError):
-            raise ResponseParseError(self._error_message, self.content)
+        except (TypeError, ValueError) as exc:
+            raise ResponseParseError(self._error_message, self.content) from exc
 
     def parse(self, query):
         return self.execute_method(query)
