@@ -1,0 +1,63 @@
+name: build
+
+on:
+  pull_request: ~
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04, python: "3.11", tox-env: py311 }
+          - { os: ubuntu-24.04, python: "3.12", tox-env: py312 }
+          - { os: ubuntu-24.04, python: "3.13", tox-env: py313 }
+          - { os: ubuntu-24.04, python: "3.14", tox-env: py314 }
+          - { os: ubuntu-24.04, python: "3.15", tox-env: py315 }
+          - { os: ubuntu-24.04, python: "pypy3.11", tox-env: pypy311 }
+          - { os: windows-latest, python: "3.14", tox-env: py314 }
+
+    name: ${{ matrix.tox-env }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+
+      # lxml ships no wheels for the PyPy ABI on the runner, so it builds from source
+      - if: startsWith(matrix.python, 'pypy')
+        run: sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt1-dev
+
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+
+      - run: uvx --from tox --with tox-uv tox -e "$TOX_ENV"
+        env:
+          TOX_ENV: ${{ matrix.tox-env }}
+
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          files: coverage.xml
+          name: ${{ matrix.tox-env }}-${{ matrix.os }}
+          token: ${{ secrets.CODECOV_TOKEN }}
