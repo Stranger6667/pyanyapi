@@ -4,4 +4,4 @@ Module provides tools for convenient interface creation over various types of da
 """
 
 
-__version__ = '0.6.1'
+__version__ = "0.6.1"

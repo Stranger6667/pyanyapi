@@ -25,18 +25,6 @@ The current stable release:
 
     pip install pyanyapi
 
-or:
-
-::
-
-    easy_install pyanyapi
-
-or from source:
-
-::
-
-    $ sudo python setup.py install
-
 Usage
 -----
 
@@ -71,5 +59,4 @@ Or you can look at the docs/ directory in the repository.
 Python support
 --------------
 
-PyAnyAPI supports Python 2.6, 2.7, 3.2, 3.3, 3.4, 3.5, PyPy and partially PyPy3 and Jython.
-Unfortunately ``lxml`` doesn't support PyPy3 and Jython, so HTML & XML parsing is not supported on PyPy3 and Jython.
+PyAnyAPI supports Python 3.11+ and PyPy.
