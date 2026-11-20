@@ -3,18 +3,23 @@
 import csv
 import json
 import re
+from collections.abc import Callable, Sequence
+from functools import cache
+from typing import TYPE_CHECKING, Any
 
 import yaml
 from lxml import etree, objectify
 from lxml.etree import HTMLParser, XMLParser
 
 from .exceptions import ResponseParseError
-from .helpers import memoize
+
+if TYPE_CHECKING:
+    from .parsers import BaseParser
 
 DICT_LOOKUP = " > "
 
 
-def expand_results(value):
+def expand_results(value: Any) -> Any:
     if isinstance(value, list):
         return [item.parse_all() for item in value]
     return value
@@ -23,38 +28,43 @@ def expand_results(value):
 class BaseInterface:
     """Basic dynamically generated interface."""
 
-    content = None
-    empty_result = None
+    content: Any = None
+    empty_result: Any = None
+    _parsed_content: Any
 
-    def __init__(self, content, strip=False):
+    def __init__(self, content: Any, strip: bool = False) -> None:
         self.content = content
         self.strip = strip
-        self.parse = memoize(self.parse)
+        self.parse = cache(self.parse)  # type: ignore[method-assign]
+
+    if TYPE_CHECKING:
+        # Attributes are generated from parser settings at runtime
+        def __getattr__(self, name: str) -> Any: ...
 
     @classmethod
-    def init_attr(cls, settings):
+    def init_attr(cls, settings: Any) -> Callable[["BaseInterface"], Any]:
 
-        def inner(self):
+        def inner(self: BaseInterface) -> Any:
             return cls.execute_method(self, settings)
 
         return inner
 
-    def execute_method(self, settings):
+    def execute_method(self, settings: Any) -> Any:
         raise NotImplementedError
 
     @property
-    def parsed_content(self):
+    def parsed_content(self) -> Any:
         if not hasattr(self, "_parsed_content"):
             self._parsed_content = self.perform_parsing()
         return self._parsed_content
 
-    def perform_parsing(self):
+    def perform_parsing(self) -> Any:
         raise NotImplementedError
 
-    def parse(self, query):
+    def parse(self, query: Any) -> Any:
         raise NotImplementedError
 
-    def parse_all(self):
+    def parse_all(self) -> dict[str, Any]:
         """Processes all available properties and returns results as dictionary."""
         return {
             key: expand_results(getattr(self, key, self.empty_result))
@@ -62,7 +72,7 @@ class BaseInterface:
             if hasattr(attr, "_attached") and type(attr).__name__ == "cached_property"
         }
 
-    def maybe_strip(self, value):
+    def maybe_strip(self, value: Any) -> Any:
         if self.strip and isinstance(value, str):
             return value.strip()
         return value
@@ -73,18 +83,18 @@ EMPTY_RESULT = object()
 
 
 class CombinedInterface(BaseInterface):
-    def __init__(self, parsers, *args, **kwargs):
+    def __init__(self, parsers: Sequence["BaseParser"], content: Any, strip: bool = False) -> None:
         self.parsers = parsers
-        super().__init__(*args, **kwargs)
+        super().__init__(content, strip)
 
-    def __getattribute__(self, item):
+    def __getattribute__(self, item: str) -> Any:
         # Catch self.parsers and dynamically attached attributes
         try:
             return super().__getattribute__(item)
         except AttributeError:
             return self.walk(item)
 
-    def walk(self, item):
+    def walk(self, item: str) -> Any:
         """Recursively walks through all available parsers."""
         for parser in self.parsers:
             try:
@@ -97,8 +107,9 @@ class CombinedInterface(BaseInterface):
                 return result
             except (AttributeError, ResponseParseError):
                 pass
+        return None
 
-    def parse_all(self):
+    def parse_all(self) -> dict[str, Any]:
         result = super().parse_all()
         for parser in self.parsers:
             result.update(parser.parse_all(self.content))
@@ -124,17 +135,17 @@ class XPathInterface(BaseInterface):
     before concatenation.
     """
 
-    parser_class = HTMLParser
+    parser_class: type[HTMLParser] | type[XMLParser] = HTMLParser
     empty_result = ""
     _error_message = "HTML data can not be parsed."
 
-    def perform_parsing(self):
+    def perform_parsing(self) -> Any:
         try:
             return etree.fromstring(self.content, self.parser_class())
         except etree.XMLSyntaxError as exc:
             raise ResponseParseError(self._error_message, self.content) from exc
 
-    def execute_method(self, settings):
+    def execute_method(self, settings: Any) -> Any:
         if isinstance(settings, dict):
             result = self.parse(settings["base"])
             child_query = settings.get("children")
@@ -150,7 +161,7 @@ class XPathInterface(BaseInterface):
 
         return self.parse(settings)
 
-    def parse(self, query):
+    def parse(self, query: Any) -> Any:
         return self.maybe_strip(self.parsed_content.xpath(query))
 
 
@@ -175,13 +186,13 @@ class XMLObjectifyInterface(BaseInterface):
 
     _error_message = "XML data can not be parsed."
 
-    def perform_parsing(self):
+    def perform_parsing(self) -> Any:
         try:
             return objectify.fromstring(self.content)
         except etree.XMLSyntaxError as exc:
             raise ResponseParseError(self._error_message, self.content) from exc
 
-    def __getattribute__(self, item):
+    def __getattribute__(self, item: str) -> Any:
         try:
             return super().__getattribute__(item)
         except AttributeError:
@@ -192,7 +203,7 @@ class XMLObjectifyInterface(BaseInterface):
             except AttributeError:
                 return None
 
-    def maybe_strip(self, value):
+    def maybe_strip(self, value: Any) -> Any:
         if self.strip and isinstance(value, objectify.ObjectifiedElement):
             if isinstance(value, objectify.StringElement):
                 return value.text.strip() if value.text is not None else value
@@ -213,7 +224,7 @@ class DictInterface(BaseInterface):
     which will get "123" from {"container":{"id":"123"}}
     """
 
-    def get_from_dict(self, target, query):
+    def get_from_dict(self, target: Any, query: str) -> Any:
         if not target:
             return target
         action_list = query.split(DICT_LOOKUP)
@@ -231,7 +242,7 @@ class DictInterface(BaseInterface):
                 return target
         return self.maybe_strip(target)
 
-    def execute_method(self, settings):
+    def execute_method(self, settings: Any) -> Any:
         if isinstance(settings, dict):
             result = self.parse(settings["base"])
             child_query = settings.get("children")
@@ -245,14 +256,14 @@ class DictInterface(BaseInterface):
 
         return self.parse(settings)
 
-    def parse(self, query):
+    def parse(self, query: Any) -> Any:
         return self.get_from_dict(self.parsed_content, query)
 
 
 class JSONInterface(DictInterface):
     _error_message = "JSON data can not be parsed."
 
-    def perform_parsing(self):
+    def perform_parsing(self) -> Any:
         try:
             return json.loads(self.content)
         except (ValueError, TypeError) as exc:
@@ -262,7 +273,7 @@ class JSONInterface(DictInterface):
 class YAMLInterface(DictInterface):
     _error_message = "YAML data can not be parsed."
 
-    def perform_parsing(self):
+    def perform_parsing(self) -> Any:
         try:
             return yaml.safe_load(self.content)
         except yaml.error.YAMLError as exc:
@@ -281,17 +292,17 @@ class AJAXInterface(JSONInterface):
 
     inner_interface_class = XPathInterface
 
-    def __init__(self, *args, **kwargs):
-        self._inner_cache = {}
-        super().__init__(*args, **kwargs)
+    def __init__(self, content: Any, strip: bool = False) -> None:
+        self._inner_cache: dict[str, XPathInterface] = {}
+        super().__init__(content, strip)
 
-    def get_inner_interface(self, text, json_part):
+    def get_inner_interface(self, text: Any, json_part: str) -> "XPathInterface":
         if json_part not in self._inner_cache:
             inner_content = super().get_from_dict(text, json_part)
             self._inner_cache[json_part] = self.inner_interface_class(inner_content, self.strip)
         return self._inner_cache[json_part]
 
-    def get_from_dict(self, target, query):
+    def get_from_dict(self, target: Any, query: str) -> Any:
         json_part, xpath_part = query.rsplit(DICT_LOOKUP, 1)
         inner_interface = self.get_inner_interface(target, json_part)
         try:
@@ -314,17 +325,17 @@ class RegExpInterface(BaseInterface):
     So, response will be like 'ok' or 'Error 100'.
     """
 
-    def __init__(self, content, strip=False, flags=0):
+    def __init__(self, content: Any, strip: bool = False, flags: int = 0) -> None:
         self.flags = flags
         super().__init__(content, strip)
 
-    def execute_method(self, settings):
+    def execute_method(self, settings: Any) -> Any:
         matches = re.findall(settings, self.content, self.flags)
         if matches:
             return self.maybe_strip(matches[0])
         return self.empty_result
 
-    def parse(self, query):
+    def parse(self, query: Any) -> Any:
         return self.execute_method(query)
 
 
@@ -340,24 +351,24 @@ class CSVInterface(BaseInterface):
 
     _error_message = "CSV data can not be parsed."
 
-    def __init__(self, content, strip=False, **reader_kwargs):
+    def __init__(self, content: Any, strip: bool = False, **reader_kwargs: Any) -> None:
         self.reader_kwargs = reader_kwargs
         super().__init__(content, strip)
 
-    def perform_parsing(self):
+    def perform_parsing(self) -> Any:
         try:
             return list(csv.reader(self.content.split(), **self.reader_kwargs))
         except (TypeError, AttributeError) as exc:
             raise ResponseParseError(self._error_message, self.content) from exc
 
-    def execute_method(self, settings):
+    def execute_method(self, settings: Any) -> Any:
         row, column = settings.split(":")
         try:
             return self.parsed_content[int(row)][int(column)]
         except (IndexError, TypeError):
             return self.empty_result
 
-    def parse(self, query):
+    def parse(self, query: Any) -> Any:
         return self.execute_method(query)
 
 
@@ -374,11 +385,11 @@ class IndexOfInterface(BaseInterface):
 
     _error_message = "Can not perform string search."
 
-    def execute_method(self, settings):
+    def execute_method(self, settings: Any) -> Any:
         try:
             return str(settings) in str(self.content)
         except (TypeError, ValueError) as exc:
             raise ResponseParseError(self._error_message, self.content) from exc
 
-    def parse(self, query):
+    def parse(self, query: Any) -> Any:
         return self.execute_method(query)

@@ -45,6 +45,17 @@ repos:
         # Report, don't rewrite
         args: [--force-exclude]
 
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        # Installs the project with its dependencies, so third-party types are checked.
+        entry: uvx --python 3.11 --with-editable=. --with lxml-stubs==0.5.1 --with types-PyYAML==6.0.12.20261113 mypy==2.4.0
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+        exclude: ^(test|docs)/
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.6
     hooks:
