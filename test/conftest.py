@@ -1,35 +1,31 @@
-# coding: utf-8
 import pytest
 
-from pyanyapi.decorators import interface_property, interface_method
-from pyanyapi.parsers import JSONParser, RegExpParser, CombinedParser, HTMLParser
+from pyanyapi.decorators import interface_method, interface_property
+from pyanyapi.parsers import CombinedParser, HTMLParser, JSONParser, RegExpParser
 
 
 class EmptyValuesParser(CombinedParser):
     parsers = [
-        RegExpParser({'test': r'\d,\d'}),
+        RegExpParser({"test": r"\d,\d"}),
         JSONParser(
             {
-                'test': {
-                    'base': 'container > test',
+                "test": {
+                    "base": "container > test",
                 },
-                'second': {
-                    'base': 'container > fail > 1',
+                "second": {
+                    "base": "container > fail > 1",
                 },
-                'third': {
-                    'base': 'container',
-                    'children': '0'
+                "third": {"base": "container", "children": "0"},
+                "null": {
+                    "base": "container",
                 },
-                'null': {
-                    'base': 'container',
-                }
             }
-        )
+        ),
     ]
 
     @interface_property
     def combined(self):
-        return '123-' + self.null
+        return "123-" + self.null
 
 
 @pytest.fixture
@@ -42,13 +38,13 @@ def dummy_parser():
 
     class DummyParser(CombinedParser):
         parsers = (
-            JSONParser({'success': 'container > test'}),
-            RegExpParser({'test': 'href=\'(.*)\''}),
+            JSONParser({"success": "container > test"}),
+            RegExpParser({"test": "href='(.*)'"}),
         )
 
         @interface_property
         def combined(self):
-            return '123-' + self.success
+            return "123-" + self.success
 
         @interface_method
         def method(self, value):
@@ -58,39 +54,28 @@ def dummy_parser():
 
 
 class ParentParser(JSONParser):
-    settings = {
-        'parent1': 'test1',
-        'parent2': 'test2'
-    }
+    settings = {"parent1": "test1", "parent2": "test2"}
 
 
 class ChildParser(ParentParser):
-    settings = {
-        'parent2': 'child_override',
-        'child1': 'test3',
-        'child2': 'test4'
-    }
+    settings = {"parent2": "child_override", "child1": "test3", "child2": "test4"}
 
 
 class SubParser(HTMLParser):
-    settings = {
-        'href': 'string(//@href)',
-        'text': 'string(//text())'
-    }
+    settings = {"href": "string(//@href)", "text": "string(//text())"}
 
 
 class SimpleParser(RegExpParser):
     settings = {
-        'test': r'\d+.\d+',
-        'test2': r'\d+',
-        'test3': 'a',
+        "test": r"\d+.\d+",
+        "test2": r"\d+",
+        "test3": "a",
     }
 
     @interface_property
     def test4(self):
-        return self.test2 + '_4'
+        return self.test2 + "_4"
 
     @interface_method
     def test_5(self, value):
-        return 'Will not be included'
-
+        return "Will not be included"

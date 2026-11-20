@@ -1,27 +1,26 @@
-# coding: utf-8
-"""
-Classes for fabrics of interfaces.
+"""Classes for fabrics of interfaces.
+
 Generates interfaces dynamically from given settings.
 """
+
+from .helpers import attach_attribute, attach_cached_property
 from .interfaces import (
-    XPathInterface,
+    AJAXInterface,
+    CombinedInterface,
+    CSVInterface,
+    IndexOfInterface,
+    JSONInterface,
+    RegExpInterface,
     XMLInterface,
     XMLObjectifyInterface,
-    JSONInterface,
+    XPathInterface,
     YAMLInterface,
-    AJAXInterface,
-    RegExpInterface,
-    CSVInterface,
-    CombinedInterface,
-    IndexOfInterface,
 )
-from .helpers import attach_attribute, attach_cached_property
 
 
-class BaseParser(object):
-    """
-    Fabric for some API-like components, which supposes to provide interface to different types of content.
-    """
+class BaseParser:
+    """Fabric for some API-like components, which supposes to provide interface to different types of content."""
+
     interface_class = None
     strip = False
 
@@ -37,26 +36,22 @@ class BaseParser(object):
     def attributes(self):
         extra_attributes = []
         for name in dir(self):
-            if name == 'attributes':
+            if name == "attributes":
                 continue
             attr = getattr(self, name)
-            if hasattr(attr, '_interface_property') or hasattr(attr, '_interface_method'):
+            if hasattr(attr, "_interface_property") or hasattr(attr, "_interface_method"):
                 extra_attributes.append(name)
         return list(self.settings.keys()) + extra_attributes
 
     def get_parents_settings(self):
-        """
-        Gather settings from parent classes. It provides some kind of settings inheritance.
-        """
+        """Gather settings from parent classes. It provides some kind of settings inheritance."""
         parents_settings = {}
         for klass in reversed(self.__class__.mro()):
-            parents_settings.update(getattr(klass, 'settings', {}))
+            parents_settings.update(getattr(klass, "settings", {}))
         return parents_settings
 
-    def parse(self, content=''):
-        """
-        Generates new class instance with desired attributes.
-        """
+    def parse(self, content=""):
+        """Generates new class instance with desired attributes."""
         self.content = self.prepare_content(content)
 
         class Interface(self.interface_class):
@@ -68,43 +63,34 @@ class BaseParser(object):
 
         return Interface(**init_kwargs)
 
-    def parse_all(self, content=''):
+    def parse_all(self, content=""):
         return self.parse(content).parse_all()
 
     def get_interface_kwargs(self):
-        return {'content': self.content, 'strip': self.strip}
+        return {"content": self.content, "strip": self.strip}
 
     def prepare_content(self, content):
-        """
-        Hook to provide way to transform content.
-        """
+        """Hook to provide way to transform content."""
         return content
 
     def setup_class(self, cls):
-        """
-        Attaches dynamic properties & methods.
-        """
+        """Attaches dynamic properties & methods."""
         self.process_settings(cls)
         self.process_decorators(cls)
 
     def process_settings(self, cls):
-        """
-        Generates methods, based on settings.
-        """
+        """Generates methods, based on settings."""
         for name, settings in self.settings.items():
             attr = cls.init_attr(settings)
             attach_cached_property(cls, name, attr)
 
     def process_decorators(self, cls):
-        """
-        Re-attach all attributes, which is decorated with
-        @interface_property or @interface_method decorators to new class.
-        """
+        """Re-attach all attributes decorated with `@interface_property` or `@interface_method` to the new class."""
         for name in dir(self):
             attr = getattr(self, name)
-            if getattr(attr, '_interface_property', False):
+            if getattr(attr, "_interface_property", False):
                 attach_cached_property(cls, name, attr)
-            elif getattr(attr, '_interface_method', False):
+            elif getattr(attr, "_interface_method", False):
                 attach_attribute(cls, name, attr)
 
     def __and__(self, other):
@@ -112,23 +98,22 @@ class BaseParser(object):
 
 
 class CombinedParser(BaseParser):
-    """
-    Combines multiple parsers in one. This can also be in different types.
-    """
+    """Combines multiple parsers in one. This can also be in different types."""
+
     interface_class = CombinedInterface
 
     def __init__(self, *parsers, **kwargs):
         if parsers:
             self.parsers = parsers
-        super(CombinedParser, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     @property
     def attributes(self):
-        return super(CombinedParser, self).attributes + sum([parser.attributes for parser in self.parsers], [])
+        return super().attributes + sum([parser.attributes for parser in self.parsers], [])
 
     def get_interface_kwargs(self):
-        kwargs = super(CombinedParser, self).get_interface_kwargs()
-        kwargs['parsers'] = self.parsers
+        kwargs = super().get_interface_kwargs()
+        kwargs["parsers"] = self.parsers
         return kwargs
 
 
@@ -141,9 +126,9 @@ class XMLParser(BaseParser):
 
     def prepare_content(self, content):
         if isinstance(content, bytes):
-            declaration, replacement = b'encoding="UTF-8"', b''
+            declaration, replacement = b'encoding="UTF-8"', b""
         else:
-            declaration, replacement = 'encoding="UTF-8"', ''
+            declaration, replacement = 'encoding="UTF-8"', ""
         return content.replace(declaration, replacement).replace(declaration.lower(), replacement)
 
 
@@ -168,11 +153,11 @@ class RegExpParser(BaseParser):
 
     def __init__(self, settings=None, strip=None, flags=0):
         self.flags = flags
-        super(RegExpParser, self).__init__(settings, strip)
+        super().__init__(settings, strip)
 
     def get_interface_kwargs(self):
-        kwargs = super(RegExpParser, self).get_interface_kwargs()
-        kwargs['flags'] = self.flags
+        kwargs = super().get_interface_kwargs()
+        kwargs["flags"] = self.flags
         return kwargs
 
 
@@ -181,10 +166,10 @@ class CSVParser(BaseParser):
 
     def __init__(self, settings=None, strip=None, **reader_kwargs):
         self.reader_kwargs = reader_kwargs
-        super(CSVParser, self).__init__(settings, strip)
+        super().__init__(settings, strip)
 
     def get_interface_kwargs(self):
-        kwargs = super(CSVParser, self).get_interface_kwargs()
+        kwargs = super().get_interface_kwargs()
         kwargs.update(self.reader_kwargs)
         return kwargs
 
