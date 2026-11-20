@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+* Fixed ``AJAXParser`` raising ``TypeError`` instead of returning an empty result for queries that do not point to a string with ``lxml>=6``.
+
 0.6.0 - 09.08.2016
 ------------------
 
