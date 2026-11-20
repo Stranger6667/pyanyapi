@@ -33,7 +33,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-requirements = ['PyYAML>=3.11']
+requirements = ['PyYAML>=3.11', 'lxml']
 test_requirements = ['pytest>=2.8.0,<3.0.0']
 
 
@@ -42,15 +42,7 @@ if sys.version_info < (3, 3):
 if sys.version_info[:2] == (3, 2):
     test_requirements.append('coverage==3.7.1')
 
-if not JYTHON:
-    if not PYPY:
-        requirements.append('ujson')
-    if not PYPY3:
-        if PYPY:
-            requirements.append('lxml<3.5')
-        else:
-            requirements.append('lxml')
-    test_requirements.append('pytest-cov>=1.8')
+test_requirements.append('pytest-cov>=1.8')
 
 
 setup(

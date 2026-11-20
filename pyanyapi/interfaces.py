@@ -3,12 +3,13 @@
 Classes to be filled with interface declarations.
 """
 import csv
+import json
 import re
-import sys
 
 import yaml
+from lxml import etree, objectify
+from lxml.etree import HTMLParser, XMLParser
 
-from ._compat import json, etree, objectify, XMLParser, HTMLParser, string_types
 from .exceptions import ResponseParseError
 from .helpers import memoize
 
@@ -68,7 +69,7 @@ class BaseInterface(object):
         )
 
     def maybe_strip(self, value):
-        if self.strip and isinstance(value, string_types):
+        if self.strip and isinstance(value, str):
             return value.strip()
         return value
 
@@ -181,11 +182,6 @@ class XMLObjectifyInterface(BaseInterface):
     Also this interface does not require any settings.
     """
     _error_message = 'XML data can not be parsed.'
-
-    def __init__(self, content, strip=False):
-        assert not (strip and hasattr(sys, 'pypy_translation_info') and sys.version_info[0] == 2), \
-            'Stripping is not supported on PyPy'
-        super(XMLObjectifyInterface, self).__init__(content, strip)
 
     def perform_parsing(self):
         try:
@@ -311,7 +307,7 @@ class AJAXInterface(JSONInterface):
 
 
 class RegExpInterface(BaseInterface):
-    """
+    r"""
     Parser based on regular expressions. It is the most powerful parser, because of
     its simplicity.
     Settings example:
