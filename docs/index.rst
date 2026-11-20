@@ -9,7 +9,6 @@ Contents:
    usage
    parsers
    complex
-   changelog
 
 
 Indices and tables
